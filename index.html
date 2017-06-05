@@ -1,0 +1,270 @@
+<html>
+	<head>
+		<title>WebglCS BETA 0.2.0</title>
+		<link rel="stylesheet" href="css/master.css" media="screen" title="no title">
+		<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+		<meta http-equiv="Pragma" content="no-cache"/>
+		<meta http-equiv="Expires" content="0"/>
+		</script>
+	</head>
+	<body>
+		<script src="js/socket.io-1.2.0.js"></script>
+		<script type="text/javascript">
+			var socket = io();
+		</script>
+		<script src="js/three.js"></script>
+		<script src="js/lodash.js" charset="utf-8"></script> <!-- fuck javascripts inability to clone objects recurively! -->
+		<script src="js/threex.keyboardstate.js" charset="utf-8"></script>
+		<script src="js/menu.js" charset="utf-8"></script>
+		<script src="js/threex.objcoord.js" charset="utf-8"></script>
+		<script src="js/math.js" charset="utf-8"></script>
+
+		<div class="menu">
+			<div class="mainMenu">
+				<div class="category" onclick="showMenuPart(2, 'play')">Play</div>
+				<div class="category" onclick="showMenuPart(2, 'options')">Options</div>
+				<div class="category">Chat</div>
+				<span class="closeButton" onclick="pauseMenu()">×</span>
+			</div>
+
+			<div class="subMenu layer2" id="play">
+				<div class="category" onclick="pauseMenu();multiplayer=false;changeLevel(getElementById('levelName').value, getElementById('memorySpace').value)">Singleplayer</div>
+				<div class="category" onclick="pauseMenu();multiplayer=true;changeLevel(getElementById('levelName').value, getElementById('memorySpace').value)">Multiplayer</div>
+			</div>
+			<div class="subMenu layer2" id="options">
+				<div class="category" onclick="showMenuPart(3, 'online')">Online</div>
+				<div class="category" onclick="showMenuPart(3, 'video')">Video</div>
+				<div class="category">Audio</div>
+				<div class="category" onclick="showMenuPart(3, 'levels')">Level</div>
+				<div class="category" onclick="showMenuPart(3, 'personal')">Personal</div>
+			</div>
+			<div class="subMenu layer3" id="online">
+				<div class="category">Multiplayer</div>
+				<div class="category">Nickname: <input type="text" name="name" value="Anon" id="nickname"></div>
+			</div>
+			<div class="subMenu layer3" id="video">
+				<div class="category" onclick="showMenuPart(4, 'cameraType')">camera type</div>
+				<div class="category" onclick="showMenuPart(4, 'ambientLight')">ambient light</div>
+				<div class="category">shadows</div>
+				<div class="category">bump mapping</div>
+			</div>
+			<div class="subMenu layer3" id="levels">
+				<div class="category" onclick="changeLevel(getElementById('levelName').value, getElementById('memorySpace').value)">change Level</div>
+				<div class="category" onclick="refreshLvlSel(document.getElementById('levelURL').value); showMenuPart(4, 'levelList')">show levels for: <input type="text" name="name" value="levels/" id="levelURL"></div>
+				<div class="category">level name: <input type="text" name="name" value="levels/cave_pillars.json" id="levelName"></div>
+				<div class="category">memory space: <input type="number" name="name" value="0" id="memorySpace"></div>
+			</div>
+			<div class="subMenu layer3" id="personal">
+				<div class="category">player image: <input type="text" name="name" value="usr/chars/MyChar.png" id="playerImageLocation"></div>
+				<div class="category" onclick="showChars(document.getElementById('skinPreviewURL').value); showMenuPart(4, 'charList')">player image list: <input type="text" name="name" value="usr/chars/" id="skinPreviewURL"></div>
+				<div class="category">weapon: <input type="text" name="name" value="" id="chosenWeapon"></div>
+				<div class="category" onclick="weaponThumbsReload(document.getElementById('weaponLocation').value);showMenuPart(4, 'weaponList')">weapon list: <input type="text" name="name" value="usr/weapons/" id="weaponLocation"></div>
+			</div>
+
+			<div class="subMenu layer4" id="cameraType">
+				<div class="category" onclick="camera.toPerspective(); camera.setFov(75)">3D</div>
+				<div class="category" onclick="camera.toOrthographic(); camera.setFov(20)">2D</div>
+			</div>
+			<div class="subMenu layer4" id="ambientLight">
+				<div class="category"><input type="range" min="0" max="100" name="name" value="25" id="ambiLightSlider" onchange="document.getElementById('ambiLightValue').innerHTML = document.getElementById('ambiLightSlider').value; ambiLight.intensity = document.getElementById('ambiLightSlider').value * 0.01"><b id="ambiLightValue">25</b></div>
+			</div>
+			<div class="subMenu layer4" id="levelList">
+				Could not load... ¯\_(ツ)_/¯<br>
+				maybe restart the server?
+			</div>
+			<div class="subMenu layer4" id="charList">
+				Could not load... ¯\_(ツ)_/¯<br>
+				maybe restart the server?
+			</div>
+			<div class="subMenu layer4" id="weaponList">
+				Could not load... ¯\_(ツ)_/¯<br>
+				maybe restart the server?
+			</div>
+		</div>
+
+		<!-- <div class="menu">
+			<div class="header">
+				<span class="closeButton" onclick="pauseMenu()"><b>×</b></span>
+				<div class="categories">
+					<span class="menuItem" onclick="showMenuPart('Home')" >Home</span>
+					<span class="menuItem" onclick="showMenuPart('Options')" >Options</span>
+					<span class="menuItem" onclick="showMenuPart('Map')" >Map</span>
+					<span class="menuItem" onclick="showMenuPart('Chat')" >Chat</span>
+					<span class="menuItem" onclick="showMenuPart('Impressum')" >Impressum</span>
+				</div>
+			</div>
+				<div class="menuBody" id="Home" style="display: block!important">
+					<h1>WebglCS 0.1.2</h1>
+					<p>
+						<table id="controles">
+							<tr>
+								<td><button type="button" name="button">W</button>
+									<button type="button" name="button">S</button>
+								</td>
+								<td>
+									<button type="button" name="button">A</button>
+									<button type="button" name="button">D</button>
+								</td>
+								<td><button type="button" name="button">SPACE</button></td>
+								<td><button type="button" name="button">E</button>
+									<button type="button" name="button">ESC</button>
+								</td>
+							</tr>
+							<tr>
+								<td>Look up/down</td>
+								<td>move left/right</td>
+								<td>Jump</td>
+								<td>open/close menu</td>
+							</tr>
+						</table>
+						<br>
+						LOAD A LEVEL UNDER THE CATEGORY "MAP"
+						<br><br>
+						<h3>PLEASE READ:</h3>
+						<p>
+							Visit the <a href="https://www.cavestory.org/forums/threads/webgl-multiplayer-cavestory-inspired-game.13930/">CaveStory forum post</a> for this game for furher information.
+							<br>
+							Also, loading times of up to 10 seconds for large maps are to be expected (average should not exceed ~1-3 secons though).
+							<br>
+							Consider using <a href="chrome.google.com">Google Chrome</a> to play this game, as it provides the best experience!
+						</p>
+					</p>
+				</div>
+
+				<div class="menuBody" id="Options">
+					<h1>General Settings</h1>
+						<p>
+							Some configurations might need to reload the level. <button type="button" onclick="changeLevel(level[currentLevel].url, currentLevel)" name="button">reload map</button>
+							<ul>
+								<li>Multiplayer : <button type="button" onclick="if (this.innerHTML == 'true'){this.innerHTML = 'false';disableMultiplayer()}else{this.innerHTML = 'true';enableMultiplayer()} ">true</button></li>
+								<li>camera type : <button type="button" name="button" onclick="camera.toPerspective(); camera.setFov(75)">3D (Perspective)</button> <button type="button" name="button" onclick="camera.toOrthographic(); camera.setFov(20)">2D (Orthographic)</button></li>
+								<li>ambient light: <input type="range" min="0" max="100" name="name" value="25" id="ambiLightSlider" onchange="document.getElementById('ambiLightValue').innerHTML = document.getElementById('ambiLightSlider').value; ambiLight.intensity = document.getElementById('ambiLightSlider').value * 0.01"><b id="ambiLightValue">25</b></li>
+								<li>shadows (reload): <button id="shadowsOnOffBtn" onclick="shadowsOnOff()" type="button" name="button">OFF</button></li>
+								<li>entity shadows (reload): <button id="entityShadowsOnOffBtn" type="button" onclick="entityShadowsOnOff()" name="button">OFF</button></li>
+								<li>shadow map type / shadow "softness" (reload):
+									<button type="button" onclick="renderer.shadowMap.type = THREE.BasicShadowMap;" name="button">BasicShadowMap</button>
+									<button type="button" onclick="renderer.shadowMap.type = THREE.PCFShadowMap;" name="button">PCFShadowMap</button>
+									<button type="button" onclick="renderer.shadowMap.type = THREE.PCFSoftShadowMap;" name="button">PCFSoftShadowMap</button>
+								</li>
+								<li>shadow quality: <input type="range" min="1" max="16" name="name" value="11" id="sqslider" onchange="document.getElementById('sqvalue').innerHTML = document.getElementById('sqslider').value; changeShadowQuality(document.getElementById('sqslider').value)"><b id="sqvalue">11</b></li>
+								<li>useBumpMapping: <button type="button" name="button" onclick="if(this.innerHTML == 'false'){this.innerHTML = 'true'; useBumpMapping = true}else{this.innerHTML = false; useBumpMapping = false};">false</button></li>
+								<li>
+									player image + .json: <input type="text" id="playerImageLocation" name="name" value="usr/chars/MyChar.png"> (levelreload + game might need reload if entered wrong)
+									<br>
+									Skins on server adress: <input id="skinPreviewURL" type="text" name="name" value="usr/chars/">: (<button type="button" name="button" onclick="showChars(document.getElementById('skinPreviewURL').value)">load preview</button>)
+									<div id="skinPreview">
+									</div>
+								</li>
+								<li>resource pack: <input type="text" id="resourcePack" name="name" value="/"> (under dev)</li>
+								<li>nickname: <input type="text" name="name" id="nickname" value="Anon"><button type="button" name="button" onclick="entityList[player.id].name = document.getElementById('nickname').value">change</button></li>
+								<li>weapon:
+									<button type="button" name="button" onclick="entityList[player.id].weapon = '';">none</button><br>
+									<div id="weaponThumbs">
+
+									</div>
+								</li>
+							</ul>
+						</p>
+				</div>
+
+				<div class="menuBody" id="Map">
+					<h1>Levelselect</h1>
+					level location: <input type="text" id="levelFolder" name="name" value="levels/"> <button type="button" name="button" onclick="refreshLvlSel( document.getElementById('levelFolder').value);">refresh preview</button>
+					<br>
+					in case this does not work, reload the page using shift+f5.
+					<div id="levelSelect">
+					</div>
+					<script type="text/javascript">
+						refreshLvlSel("levels/");
+					</script>
+					<input type="text" id="levelName" value="levels/xxx.json">
+					<br>
+					<input type="number" id="memorySpace" value="1">
+					<br>
+					<button id="levelSelectButton" type="button" name="button" onclick="changeLevel(getElementById('levelName').value, getElementById('memorySpace').value)">Load Level</button>
+					<br>
+					<br>
+					Other:
+					<br>
+					<button type="button" name="button" onclick="loadLevel(getElementById('levelName').value, getElementById('memorySpace').value)">Load levelname.json into level[...]</button>
+					<button type="button" name="button" onclick="unloadLevel(getElementById('memorySpace').value)">Unload level[...]</button>
+					<button type="button" name="button" onclick="currentLevel = getElementById('memorySpace').value">set currentLevel = ...</button>
+					<br>
+					<br>
+					<p>
+						To create a level yourself follow these steps:
+						<ul>
+							<li>download <a href="http://www.mapeditor.org/">tiled map editor</a></li>
+							<li>create a new leveltemplate using the <a href="/levelGen.html">levelgenerator</a></li>
+							<li>open the new level template in tiled and have fun creating your own level</li>
+						</ul>
+					</p>
+				</div>
+
+				<div class="menuBody" id="Chat">
+					<h1>Chatlog</h1>
+					<div class="realChat">
+
+						<div id="chatLog">
+
+						</div>
+						<div class="ChatInput" action="">
+							<input id="chatInput" type="text" autocomplete="off" name="ChatInput" value="">
+							<button id="chatSend" type="button" name="button" onclick="sendMSG( document.getElementById('chatInput').value );">Send</button>
+						</div>
+					</div>
+					<script type="text/javascript">
+						document.getElementById("chatInput").addEventListener("keyup", function(event) {
+							event.preventDefault();
+							if (event.keyCode == 13) {
+								sendMSG( document.getElementById('chatInput').value );
+							}
+						});
+					</script>
+					<div class="activeUsers">
+						<h4>Active Users:</h4>
+						<div id="activeUsersList">
+
+						</div>
+					</div>
+					<br><br><br><br>
+				</div>
+
+				<div class="menuBody" id="Impressum">
+					<p>
+						© Luca Leon Happel 2017 / Quote99
+						<br>
+						<br>
+						<a href="https://www.cavestory.org/forums/threads/webglcs-beta-0-1-webgl-multiplayer-cavestory-inspired-game.13930/#post-358266">Official forum post for this game</a>
+						<br>
+						<br>
+						Maybe you care to give me a visit on social media:
+						<br>
+						---Links will follow some day---
+						</p>
+				</div>
+			</div>
+		</div>
+		-->
+		<script type="text/javascript">
+			pauseMenu();
+			pauseMenu();
+		</script>
+
+		<script src="js/canvas_to_img.js" charset="utf-8"></script>
+		<script src="js/cursor.js" charset="utf-8"></script>
+		<script src="js/connection.js" charset="utf-8"></script>
+		<script src="js/bullets.js" charset="utf-8"></script>
+		<script src="js/entities.js" charset="utf-8"></script>
+		<script src="js/player.js" charset="utf-8"></script>
+		<script src="js/controles.js" charset="utf-8"></script>
+		<script src="js/JSONlevelLoader.js" charset="utf-8"></script>
+		<script src="js/levelUnloader.js" charset="utf-8"></script>
+		<script src="js/controles.js" charset="utf-8"></script>
+		<script src="js/worldBuildingTools.js" charset="utf-8"></script>
+		<script src="js/collision.js" charset="utf-8"></script>
+		<script src="js/CombinedCamera.js" charset="utf-8"></script>
+		<script src="js/hud.js" charset="utf-8"></script>
+        <script src="js/main.js" charset="utf-8"></script>
+	</body>
+</html>

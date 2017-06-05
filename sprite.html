@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>preview</title>
+    </head>
+    <body>
+        <canvas id="canvas" width="640" height="640"></canvas>
+        <script type="text/javascript">
+            canvas = document.getElementById("canvas");
+            ctx = canvas.getContext("2d");
+            ctx.webkitImageSmoothingEnabled = false;
+            ctx.mozImageSmoothingEnabled = false;
+            ctx.imageSmoothingEnabled = false; /// future
+
+
+            image = new Image();
+            image.onload = function () {
+                setInterval(function () {
+                    draw();
+                }, 100);
+            }
+            image.src = "img/chars/cave.png";
+
+            tile = new Object();
+            tile.x = 11;
+            tile.y = 18;
+            tile.frame = 0;
+            scaling = 10;
+
+            function draw() {
+                // ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+                ctx.drawImage(image, tile.x * tile.frame, 0, tile.x, tile.y, 0, 0, tile.x * scaling, tile.y * scaling);
+                tile.frame++;
+                if (tile.frame * tile.x >= image.width)
+                    tile.frame = 0
+            }
+        </script>
+    </body>
+</html>

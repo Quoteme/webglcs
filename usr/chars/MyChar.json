@@ -1,0 +1,22 @@
+{
+    "imageSize" : {
+        "x" : 16,
+        "y" : 16
+    },
+    "animationDuration" : 15,
+    "usedAnimation" : "stand",
+    "animation" : {
+        "stand" : [0],
+        "run" : [0,1,2],
+        "up" : [3],
+        "upRun" : [3,4,5],
+        "ascend" : [1],
+        "fall" : [2],
+        "fallLookUp" : [4],
+        "fallLookDown" : [6],
+        "look" : [7],
+        "hover" : [8],
+        "dead" : [9],
+        "deadFall" : [10]
+    }
+}

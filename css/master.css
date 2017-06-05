@@ -1,0 +1,76 @@
+@font-face {
+  font-family: "PressStart2p";
+  src: url("fonts/PressStart2P-Regular.ttf") format("truetype");
+}
+
+body {
+    background-color: #000;
+    margin: 0;
+    font-family: "PressStart2p", sans-serif;
+    font-size: 12px;
+    line-height: 20px;
+    color: #fff;
+}
+canvas:not(.HUD) {
+    width: 100%; height: 100%;
+}
+
+canvas{
+    position: absolute;
+    z-index: 0;
+}
+
+.HUD{
+    z-index: 1;
+}
+
+.menu{
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    z-index: 2;
+    transition: 0.5s;
+}
+
+.mainMenu{
+    float: left;
+}
+
+.subMenu{
+    display: none;
+    max-height: 100%;
+}
+
+.closeButton{
+    font-size: 42px;
+    line-height: 102px;
+    margin: 10px;
+    float: left;
+    display: inline;
+}
+
+.category{
+    border: 5px solid #AA1111;
+    background-color: #000;
+    font-size: 18px;
+    padding: 10px;
+    margin: 10px;
+    border-top-right-radius: 30px;
+    transition: 0.5s;
+}
+
+.category:hover{
+    border-bottom-width: 10px;
+    transition: 0.5s;
+}
+
+.weaponPreview{
+    width: 46px;
+    image-rendering: pixelated;
+}
+
+canvas{
+    transition: 0.5s;
+    /*filters are here. Do not add/remove anything here*/
+}

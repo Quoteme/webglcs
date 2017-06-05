@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Levelgenerator</title>
+        <style media="screen">
+            #output{
+                height: 400px;
+                width: 600px;
+            }
+            #instrucions{
+                list-style: decimal;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Levelgenerator</h1>
+        <div class="templateGenerator">
+            <h3>template generator</h3>
+            <p>
+                to generate a template yourself follow these steps:
+                <ul id="instrucions">
+                    <li>enter the neccessary details in the boxes below (like level width and what tilemap you want to use)</li>
+                    <li>press "preload image". This is neccesary to gather information about the tilemap that is used in the level generation</li>
+                    <li>press "Generate"</li>
+                    <li>click "download"</li>
+                    <li>rename the file to whatever name you like you level to be called</li>
+                    <li>in case you need the original image files: <a href="img/img.zip">img.zip</a></li>
+                </ul>
+            </p>
+            <table>
+                <tr>
+                    <th>
+                        property
+                    </th>
+                    <th>
+                        value
+                    </th>
+                </tr>
+                <tr>
+                    <td>
+                        width:
+                    </td>
+                    <td>
+                        <input type="number" name="levelWidth" id="levelWidth" value="25">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        height:
+                    </td>
+                    <td>
+                        <input type="number" name="levelHeight" id="levelHeight" value="25">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        image map url:
+                    </td>
+                    <td>
+                        <input type="text" name="imgMap" id="imgMap" value="../img/Dandelion.png">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        tile width:
+                    </td>
+                    <td>
+                        <input type="number" name="name" value="32" id="tileWidth">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        tile height:
+                    </td>
+                    <td>
+                        <input type="number" name="name" value="32" id="tileHeight">
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <button type="button" name="button" onclick="preloader(document.getElementById('imgMap').value)"><h4>preload images (IMPORTANT)</h4></button>
+            <button type="button" name="generate" id="generate" onclick="document.getElementById('output').innerHTML = generateLevel(document.getElementById('levelWidth').value, document.getElementById('levelHeight').value, document.getElementById('imgMap').value, document.getElementById('tileWidth').value, document.getElementById('tileHeight').value)" ><h4>Generate</h4></button>
+            <button type="button" name="button" onclick="saveTextAsFile(document.getElementById('output').innerHTML, 'yourlevelname.json')"><h4>download</h4></button>
+            <br>
+            <div id="preview">
+                the loaded Images are here
+            </div>
+            <textarea id="output">here will be the output...</textarea>
+        </div>
+        <script type="text/javascript">
+        tempImage = new Image();
+            function preloader(ImgUrl) {
+                tempImage.src = ImgUrl.replace("../", "");
+                if (tempImage.complete) {
+                    loaded()
+                } else {
+                    tempImage.addEventListener('load', loaded)
+                    tempImage.addEventListener('error', function() {
+                        alert('error')
+                    })
+                }
+
+                function loaded() {
+                    document.getElementById("preview").innerHTML = Math.random();
+                }
+            }
+            function generateLevel(width, height, ImgUrl, tileWidth, tileHeight) {
+                output = new Object();
+                output.height = height;
+                output.layers = new Array();
+                // Generate each layer that has tiles
+                for (var i = 0; i <= 4; i++) {
+                    output.layers[i] = new Object();
+                    output.layers[i].data = new Array();
+                    for (var j = 0; j < height * width; j++) {
+                        output.layers[i].data[j] = 0;
+                    }
+                    output.layers[i].height = height;
+                    output.layers[i].name = "TEMP";
+                    output.layers[i].opacity = 1;
+                    output.layers[i].type = "tilelayer";
+                    output.layers[i].visible = true;
+                    output.layers[i].width = width;
+                    output.layers[i].x = 0;
+                    output.layers[i].y = 0;
+                }
+                // now give each layer specific properties and a name
+                output.layers[0].name = "Hintergrund";
+                output.layers[1].name = "Mittelgrund";
+                    output.layers[1].properties = new Object();
+                    output.layers[1].properties.collision = "true";
+                output.layers[2].name = "Vordergrund";
+                output.layers[3].name = "Flach";
+                    output.layers[3].properties = new Object();
+                    output.layers[3].properties.flat = "0.5";
+                output.layers[4].name = "Lichter";
+                    output.layers[4].properties = new Object();
+                    output.layers[4].properties.light = "true";
+                    output.layers[4].properties.lightColor = "#ffbfaf";
+                    output.layers[4].properties.lightDecay = "1";
+                    output.layers[4].properties.lightDistance = "100";
+                    output.layers[4].properties.lightIntensity = "1";
+                    output.layers[4].properties.lightShadow = "false";
+                // now generate the object layer
+                output.layers[5] = new Object();
+                    output.layers[5].draworder = "topdown";
+                    output.layers[5].height = height;
+                    output.layers[5].name = "entities"
+                    output.layers[5].objects = new Array();
+                    // this is what adds all players / entities
+                        output.layers[5].objects[0] = new Object();
+                            output.layers[5].objects[0].gid = 17;
+                            output.layers[5].objects[0].height = 32;
+                            output.layers[5].objects[0].id = 1;
+                            output.layers[5].objects[0].name = "quote";
+                            output.layers[5].objects[0].properties = new Object();
+                                output.layers[5].objects[0].properties.img = "player_image";
+                            output.layers[5].objects[0].rotation = 0;
+                            output.layers[5].objects[0].type = "player";
+                            output.layers[5].objects[0].visible = true;
+                            output.layers[5].objects[0].width = 32;
+                            output.layers[5].objects[0].x = 32;
+                            output.layers[5].objects[0].y = 32;
+                    output.layers[5].opacity = 1;
+                    output.layers[5].properties = new Object();
+                        output.layers[5].properties.player = "quote";
+                        output.layers[5].properties.z = 2;
+                        output.layers[5].properties.background = "#080808";
+                        output.layers[5].properties.ambiColor = "#808080";
+                        output.layers[5].properties.ambiStrengt = "0.25";
+                    output.layers[5].type = "objectgroup";
+                    output.layers[5].visible = true;
+                    output.layers[5].width = width;
+                    output.layers[5].x = 0;
+                    output.layers[5].y = 0;
+                    // final properties are being added NOW
+                    output.nextobjectid = 2;
+                    output.orientation = "orthogonal";
+                    output.properties = new Object();
+                    output.renderorder = "right-down";
+                    output.tileheight = tileHeight;
+                    output.tilesets = new Array();
+                        output.tilesets[0] = new Object();
+                        output.tilesets[0].firstgid = 1;
+                        output.tilesets[0].image = ImgUrl;
+                        output.tilesets[0].imageheight = tempImage.height
+                        output.tilesets[0].imagewidth = tempImage.width
+                        output.tilesets[0].margin = 0;
+                        output.tilesets[0].name = "basis";
+                        output.tilesets[0].properties = new Object();
+                        output.tilesets[0].spacing = 0;
+                        output.tilesets[0].tilecount = (tempImage.width / tileWidth) * (tempImage.height / tileHeight);
+                        output.tilesets[0].tileheight = tileHeight;
+                        output.tilesets[0].tilewidth = tileWidth;
+                    output.tilewidth = tileWidth;
+                    output.version = 1;
+                    output.width = width;
+
+
+                return JSON.stringify(output);
+            }
+            function saveTextAsFile(text, name)
+            {
+                var textToWrite = text;
+                var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
+                var fileNameToSaveAs = name;
+
+                var downloadLink = document.createElement("a");
+                downloadLink.download = fileNameToSaveAs;
+                downloadLink.innerHTML = "Download File";
+                if (window.webkitURL != null)
+                {
+                    // Chrome allows the link to be clicked
+                    // without actually adding it to the DOM.
+                    downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+                }
+                else
+                {
+                    // Firefox requires the link to be added to the DOM
+                    // before it can be clicked.
+                    downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+                    downloadLink.onclick = destroyClickedElement;
+                    downloadLink.style.display = "none";
+                    document.body.appendChild(downloadLink);
+                }
+
+                downloadLink.click();
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,47 @@
+{
+    "name" : "Polar Star",
+    "thumbnail" : "usr/weapons/PolarStar-thumbnail.png",
+    "arms" : {
+        "url" : "usr/weapons/PolarStar-arm.png",
+        "width" : 9,
+        "height" : 3
+    },
+    "bullet" : {
+        "url": "usr/weapons/PolarStar-bullet.png",
+        "width" : 12,
+        "height" : 2,
+        "depth" : 2
+    },
+    "animation" : [
+        {
+            "duration" : 80,
+            "width" : 8,
+            "height" : 2,
+            "depth" : 2,
+            "color" : "#ffffff"
+        },
+        {
+            "duration" : 20,
+            "width" : 5,
+            "height" : 2,
+            "color" : "#bbeeff"
+        }
+    ],
+    "trajectory" :[
+        {
+            "x": "$*4",
+            "y": "0",
+            "z": "0"
+        }
+    ],
+    "damage" : 1,
+    "speed" : 3,
+    "knockbackTime" : 20,
+    "decay": 25,
+    "weight" : 3,
+    "piercing" : 0,
+    "knockback" : 0,
+    "effects" : [
+        0
+    ]
+}

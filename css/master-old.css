@@ -1,0 +1,98 @@
+body { margin: 0; }
+canvas:not(.HUD) { width: 100%; height: 100%}
+.menu{
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    width: 60%;
+    height: 60%;
+    background-color: #fff;
+    opacity: 0.9;
+    /*display: none;*/
+    overflow: hidden;
+    font-family: sans-serif;
+    z-index: 2;
+}
+.HUD{
+    z-index: 1;
+}
+.menu .header .title{
+    width: 100%;
+    font-size: 32px;
+    text-align: center;
+    font-family: Courier;
+    /*height: 32px;*/
+    background-color: #040404;
+    color: #fff;
+    position: absolute;
+    z-index: 1;
+}
+.closeButton{
+    color: #E46A6B;
+    float: right;
+    cursor:pointer;
+}
+.menuSelector{
+    padding-top: 40px;
+    margin-bottom: 40px
+}
+.menuBody{
+    overflow: scroll!important;
+    /*margin-top: 60px;*/
+    width: 100%;
+    height: 100%;
+    display: none;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    padding: 10px;
+    box-sizing: border-box;
+}
+.categories{
+    width: 100%;
+    position: absolute;
+    top: 42px;
+    z-index: 0;
+}
+.categories span{
+    background-color: #6E6E6E;
+    transition: 0.25s;
+    border-bottom-right-radius: 10px;
+    color: #fff;
+    padding: 5px;
+    font-size: 17px;
+    position: relative;
+    cursor: pointer;
+}
+.categories span:hover{
+    padding-top: 10px;
+    padding-bottom: 16px;
+    transition: 0.25s;
+    background-color: #E46A6B!important;
+    /*color: #000;*/
+}
+
+#notSelected{
+    background-color: #6E6E6E;
+}
+
+#selected{
+    background-color: #3f3f3f;
+}
+
+.activeUsers{
+    float: right;
+    border: 1px solid black;
+}
+.realChat{
+    float: left;
+}
+#skinPreview{
+    border: 1px solid black;
+}
+#controles{
+    /*border: 1px solid black;*/
+}
+#controles td{
+    padding: 5px;
+    padding-right: 60px;
+}

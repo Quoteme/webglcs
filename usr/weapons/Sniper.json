@@ -1,0 +1,47 @@
+{
+    "name" : "Sniper",
+    "thumbnail" : "usr/weapons/Sniper-thumbnail.png",
+    "arms" : {
+        "url" : "usr/weapons/Sniper-arm.png",
+        "width" : 9,
+        "height" : 3
+    },
+    "bullet" : {
+        "url": "usr/weapons/Sniper-bullet.png",
+        "width" : 20,
+        "height" : 1,
+        "depth" : 1
+    },
+    "animation" : [
+        {
+            "duration" : 60,
+            "width" : 8,
+            "height" : 2,
+            "depth" : 2,
+            "color" : "#88aa88"
+        },
+        {
+            "duration" : 60,
+            "width" : 5,
+            "height" : 2,
+            "color" : "#aa88aa"
+        }
+    ],
+    "trajectory" :[
+        {
+            "x": "($*$)/2",
+            "y": "0.1",
+            "z": "0"
+        }
+    ],
+    "damage" : 6,
+    "speed" : 3,
+    "knockbackTime" : 100,
+    "decay": 50,
+    "weight" : 2,
+    "piercing" : 0,
+    "knockback": 50,
+    "effects" : [
+        0
+    ]
+}

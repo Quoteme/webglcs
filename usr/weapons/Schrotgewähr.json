@@ -1,0 +1,51 @@
+{
+    "name" : "Schrotgewähr",
+    "thumbnail" : "usr/weapons/Schrotgewähr-thumbnail.png",
+    "arms" : {
+        "url" : "usr/weapons/Schrotgewähr-arm.png",
+        "width" : 9,
+        "height" : 3
+    },
+    "bullet" : {
+        "url": "usr/weapons/Schrotgewähr-bullet.png",
+        "width" : 8,
+        "height" : 2,
+        "depth" : 2
+    },
+    "animation" : [
+        {
+            "duration" : 100,
+            "width" : 8,
+            "height" : 2,
+            "depth" : 2,
+            "color" : "#eeeeee"
+        }
+    ],
+    "trajectory" :[
+        {
+            "x": "$*6",
+            "y": "0.1",
+            "z": "0"
+        },
+        {
+            "x": "$*6",
+            "y": "0.1 + $*1.5",
+            "z": "0"
+        },
+        {
+            "x": "$*6",
+            "y": "0.1 - $*1.5",
+            "z": "0"
+        }
+    ],
+    "damage" : 6,
+    "speed" : 3,
+    "knockbackTime" : 50,
+    "decay": 10,
+    "weight" : 2,
+    "piercing" : 0,
+    "knockback": 10,
+    "effects" : [
+        0
+    ]
+}
