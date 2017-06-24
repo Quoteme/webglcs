@@ -9,7 +9,9 @@ function spawnBullet(owner, props){
     localBullets[localBullets.length-1].mesh.position.set(props.origin.x, props.origin.y, props.origin.z);
 	localBullets[localBullets.length-1].mesh.rotation.z = -1 * angleBetweenObjects(THREEx.ObjCoord.cssPosition(entityList[player.id].mesh, camera,renderer), cursor);
 	scene.add( localBullets[localBullets.length-1].mesh );
-    localBullets[localBullets.length-1].timer = 0;
+	localBullets[localBullets.length-1].timer = 0;
+	localBullets[localBullets.length-1].collisionCounter = 0;
+	localBullets[localBullets.length-1].currentSpeed = props.speed;
 	localBullets[localBullets.length-1].props = props;
 	localBullets[localBullets.length-1].props.rotation = -1 * angleBetweenObjects(THREEx.ObjCoord.cssPosition(entityList[player.id].mesh, camera,renderer), cursor);
 
@@ -42,6 +44,16 @@ function updateBullets() {
 			}
 		}
 		localBullets[i].material.color.setHex(hex23js(localBullets[i].props.animation[usedAnimation].color));
+		// -- Collisionssystem --
+		// tempCollision = e2mCollision(localBullets[i].mesh.position);
+		// if (tempCollision.bottom != 0 || tempCollision.top != 0 ||
+		// 	tempCollision.left != 0 || tempCollision.right != 0 ||
+		// 	tempCollision.inside != 0) {
+		// 		localBullets[i].collisionCounter += 1;
+		// }
+		// if (localBullets[i].collisionCounter >= localBullets[i].props.collision.counter){
+		// 	localBullets[i].timer = localBullets[i].props.decay;
+		// }
 
         localBullets[i].timer++;
         if (localBullets[i].timer >= localBullets[i].props.decay){

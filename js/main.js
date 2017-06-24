@@ -21,13 +21,13 @@ blockSize = 16;
 shadowQuality = Math.pow(2, 11);
 currentLevel = 0;
 useBumpMapping = false;
-updateTimer = 25;
 entityShadows = false;
 newLevelReloadBuffer = newLevelReloadTimer =  100; // this buffer counts down if the level is not loaded, and will try to reload the level after run down
 loadingCounter = 0; // counts how long the game has been loaing
 cameraDistance = 0;
 multiplayer = true;
 menuShown = true;
+currentFrame = 0; // counts all frames that have been drawn
 
 entityList = new Array();
 
@@ -67,7 +67,7 @@ function animate() {
             if (!menuShown)
                 controle(entityList[player.id]);
 
-            focusEntity(entityList[player.id], camera, false);
+            focusEntity(entityList[player.id], camera, false, {"x":Math.abs(camera.position.x - entityList[player.id].position.x) * 0.05, "y":Math.abs(camera.position.y - entityList[player.id].position.y) * 0.05}, true);
             animateEntities();
         }
         else{
@@ -97,7 +97,7 @@ function animate() {
             // entityList[temp.id] = new Entity(temp.id, blockSize*47, -blockSize*26, blockSize * 2, blockSize, blockSize, "img/chars/playerB.png")
             // displayEntity(entityList[temp.id], false);
         }
-
+        currentFrame++;
     }
 
     function loadScreen(){
@@ -136,9 +136,3 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
-
-setInterval(function () {
-    if (typeof(player) == "object" && multiplayer) {
-        socket.emit("entity update", miniEntityData(entityList[player.id], socketOwnID) );
-    }
-}, updateTimer);

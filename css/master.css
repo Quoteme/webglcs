@@ -40,6 +40,7 @@ canvas{
 .subMenu{
     display: none;
     max-height: 100%;
+    overflow-x: auto;
 }
 
 .closeButton{

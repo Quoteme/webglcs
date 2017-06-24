@@ -118,6 +118,10 @@ function buildBricks() {
             typeof(level[currentLevel].layers[k].properties.sameLayer) !== "undefined")
                 currentLayer--;
 
+            if (typeof(level[currentLevel].layers[k].properties.skipLayer) !== "undefined") {
+                currentLayer += level[currentLevel].layers[k].properties.skipLayer;
+            }
+
             if(typeof(level[currentLevel].layers[k].properties.liquid) !== "undefined")
                 liquidLayers.push(k);
         }

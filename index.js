@@ -5,46 +5,27 @@ var io = require('socket.io')(http);
 var fs = require('fs');
 var port = process.env.PORT || 3000;
 
-updateTimer = 25;
-
-allClients = new Array();
-entityData = new Object();
-
-// error handler
-process.on('uncaughtException', function (err) {
-  console.log('Caught exception: ' + err);
-});
-
-// send index.html if client accesses home directory
+// send html files to client
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
 });
-// on any static (normal) request for a file from the client, allow him to access any file on the server
 app.use(express.static(__dirname));
 
-// on new connection
+// handle the connection of a user
 io.on('connection', function(socket){
-    console.log('user ' +   socket.id + ' connected' );
-    allClients.push(socket.id);
-    io.emit("new client", socket.id);
+    console.log('a user connected : ' + socket.id);
+    socket.broadcast.emit("new client", socket.id);
 
-
-    // Was passiert, wenn der Spieler das Spiel beendet
-    // What happens if the player ends the game
     socket.on('disconnect', function(){
-        console.log('user ' + socket.id + ' disconnected');
-        var i = allClients.indexOf(socket);
-        allClients.splice(i, 1);
-        delete entityData[socket.id];
-        io.emit('terminate', socket.id);
-        for (var i = 0; i < entityData.length; i++) {
-            if ( typeof entityData[i] == "undefined"){
-                delete entityData[i];
-            }
-        }
-        // console.log(allClients);
+        console.log('user disconnected : ' + socket.id);
+        socket.broadcast.emit("disconnected", socket.id);
     });
 
+    socket.on('entity update', function(minifiedEntityData){
+        socket.broadcast.emit("receiveEntity", {"entity": minifiedEntityData, "id": socket.id});
+    });
+
+    // miscelleaus other functions
     socket.on('chat message', function(msg){
         io.emit('chat message', [socket.id, msg]);
     });
@@ -59,9 +40,6 @@ io.on('connection', function(socket){
         io.sockets.connected[socket.id].emit('receive clientList', [allClients, entityData]);
         io.sockets.connected[socket.id].emit('receive ownID', socket.id);
     });
-    socket.on('entity update', function(minifiedEntityData){
-        entityData[minifiedEntityData.id] = minifiedEntityData;
-    });
     socket.on('request weaponThumbs', function(folder){
         io.sockets.connected[socket.id].emit('receive weaponThumbs', getFiles(folder));
     });
@@ -70,10 +48,6 @@ io.on('connection', function(socket){
 http.listen(port, function(){
     console.log('listening on *:' + port);
 });
-
-setInterval(function () {
-    io.emit("all entity update", entityData);
-}, updateTimer);
 
 // Allgemeine Funktionen
 // Common functions

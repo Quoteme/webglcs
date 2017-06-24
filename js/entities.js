@@ -7,7 +7,6 @@ entityIdSpace = Math.pow(10, 8);
 function EntityID(id) {
     this.id = id || Math.round(Math.random()*entityIdSpace);
 }
-
 function Entity(id, x, y, z, width, height, imgURL, health){
     if (imgURL == "player_image")
         imgURL = document.getElementById("playerImageLocation").value;
@@ -73,7 +72,12 @@ function Entity(id, x, y, z, width, height, imgURL, health){
         if (parent.reloadTimer <= 0 && typeof parent.weapon == "object") {
             parent.reloadTimer = parent.weapon.knockbackTime;
             for (var i = 0; i < parent.weapon.trajectory.length; i++) {
-                spawnBullet(parent.id, {"origin": _.cloneDeep(parent.position), "speed": parent.weapon.speed, "up": 0, "right": 1, "decay": parent.weapon.decay, "weight": parent.weapon.weight, "animation": parent.weapon.animation, "trajectory": parent.weapon.trajectory[i], "bullet" : parent.weapon.bullet, "knockback" : parent.weapon.knockback});
+                spawnBullet(parent.id, {"origin": _.cloneDeep(parent.position),
+                    "speed": parent.weapon.speed, "up": 0, "right": 1,
+                    "decay": parent.weapon.decay, "weight": parent.weapon.weight,
+                    "animation": parent.weapon.animation, "trajectory": parent.weapon.trajectory[i],
+                    "bullet" : parent.weapon.bullet, "knockback" : parent.weapon.knockback,
+                    "collision" : parent.weapon.collision});
             }
         }
     }
@@ -202,11 +206,32 @@ function displayEntity(entityName, autofocus) {
         focusEntity(entityName, camera);
 }
 
-function focusEntity(entity, cameraName, depth) {
+function focusEntity(entity, cameraName, depth, speed, lookAt) {
     // focuses an entity by setting the camera X & Y to the same
     // if depth is TRUE, then the camera will also focus on Z axis
     // TODO: add camera drag / gradually move to the entity
-    cameraName.position.set(entity.position.x, entity.position.y + 20, depth ? cameraDistance * 32 + 100 : cameraName.position.z);
+    if (typeof speed == "undefined") {
+        speed = {"x":10000, "y":10000};
+    }
+
+    // stabilize the camera, so that it wont move back and forth every frame
+    if (Math.abs(cameraName.position.x - entity.position.x) < speed.x) {
+        speed.x = Math.abs(cameraName.position.x - entity.position.x);
+    }
+    if (Math.abs(cameraName.position.y - entity.position.y) < speed.y) {
+        speed.y = Math.abs(cameraName.position.y - entity.position.y);
+    }
+    // finally set the real position
+    cameraName.position.x += -1 * Math.sign(cameraName.position.x - entity.position.x) * speed.x;
+    cameraName.position.y += -1 * Math.sign(cameraName.position.y - entity.position.y) * speed.y;
+    if (depth) {
+        cameraName.position.z = cameraDistance * 32 + 100;
+    }
+    if (lookAt) {
+        cameraName.lookAt(entity.position);
+    }
+
+    // cameraName.position.set(entity.position.x, entity.position.y + 20, depth ? cameraDistance * 32 + 100 : cameraName.position.z);
 }
 
 function moveEntity(entityID) {

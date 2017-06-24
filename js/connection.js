@@ -1,58 +1,68 @@
-allClients = new Array();
-socketOwnID = 0;
-serversideEntities = Array();
+updateTimer = 25;
+sse = new Object(); // serversideEntities
 
-socket.emit("request allClients", 0 );
-socket.on('receive clientList', function(cList){
-    allClients = cList[0];
-
-    console.log(cList);
-    // ----------- ----- ---- document.getElementById("activeUsersList").innerHTML = "";
-    for (var i = 0; i < cList[0].length; i++) {
-        // ----------- ----- ---- document.getElementById("activeUsersList").innerHTML += "<span style='background-color: #" + intToRGB(hashCode(cList[0][i])) + "'>" + cList[0][i] + "</span><br>";
+setInterval(function () {
+    if (typeof(player) == "object" && multiplayer) {
+        socket.emit("entity update", miniEntityData(entityList[player.id]) );
     }
-});
-socket.on('receive ownID', function(ownID){
-    socketOwnID = ownID;
+}, updateTimer);
+
+socket.on('receiveEntity', function(data){
+    if (typeof sse[data.id] == "undefined") {
+        console.log("joined " + data.id);
+        // multiplayer handshake
+        // this gets called, whenever a new player joined the game
+        sse[data.id] = data.entity;
+        sse[data.id].id = data.id;
+        preloadMinifiedEntity(sse[data.id]);
+    }else {
+        // update all the multiplayers
+        // first assign the id to the entity itself. otherwise there are some errors :/
+        sse[data.id].id = data.id;
+        // if the entity is already preloaded, do the updating and stuff
+        if (!newLevel && typeof minifiedEntityList[data.id] != "undefined") {
+            if (minifiedEntityList[data.id].img.complete && typeof minifiedEntityList[data.id].ctx != "undefined") {
+                if (typeof minifiedEntityList[data.id].mesh == 'undefined') {
+                    displayMinifiedEntity(sse[data.id]);
+                }else {
+                    updateMinifiedEntity(sse[data.id]);
+                }
+            }
+        }
+    }
+    sse[data.id] = data.entity;
 });
 
-socket.on('new client', function(client){
-    // ----------- ----- ---- document.getElementById("chatLog").innerHTML += "<p>player: <span style='background-color: #" + intToRGB(hashCode(client)) + "'>" + client + "</span> connected</p>";
-    allClients.push(client);
-});
-
-socket.on('terminate', function(client){
-    // ----------- ----- ---- document.getElementById("chatLog").innerHTML += "<p>player: <span style='background-color: #" + intToRGB(hashCode(client)) + "'>" + client + "</span> disconnected</p>";
-    allClients.splice(allClients.indexOf(client), 1);
-    console.log(client + " left game");
-    if (typeof minifiedEntityList[client] != "undefined")
-        removeMinifiedEntity(client);
+socket.on('disconnected', function(id){
+    console.log("disconnected " + id);
+    removeMinifiedEntity(id);
+    delete sse[id];
 });
 
 socket.on('all entity update', function(newEntityList){
     if (multiplayer){
-        serversideEntities = newEntityList;
+        sse = newEntityList;
         for (var i = -1; i <= allClients.length; i++) {
             if (allClients[i] != socketOwnID || typeof minifiedEntityList[allClients[i]] !== "object") {
-                if(typeof serversideEntities[allClients[i]] !== "undefined"){
-                    // console.log(serversideEntities[allClients[i]]);
+                if(typeof sse[allClients[i]] !== "undefined"){
+                    // console.log(sse[allClients[i]]);
                     if (typeof minifiedEntityList[allClients[i]] == 'undefined'){
-                        preloadMinifiedEntity(serversideEntities[allClients[i]]);
+                        preloadMinifiedEntity(sse[allClients[i]]);
                     }
                     else{
                         if (minifiedEntityList[allClients[i]].img.complete){
                             if (newLevel == false)
                             if (typeof minifiedEntityList[allClients[i]].mesh == 'undefined')
-                            displayMinifiedEntity(serversideEntities[allClients[i]]);
+                            displayMinifiedEntity(sse[allClients[i]]);
                             else
-                            updateMinifiedEntity(serversideEntities[allClients[i]]);
+                            updateMinifiedEntity(sse[allClients[i]]);
                         }
 
                     }
                 }
 
-                // if (typeof(minifiedEntityList[allClients[i]]) == "undefined" && typeof(serversideEntities[allClients[i]]) !== "undefined");
-                //     console.log((serversideEntities[allClients[i]]);
+                // if (typeof(minifiedEntityList[allClients[i]]) == "undefined" && typeof(sse[allClients[i]]) !== "undefined");
+                //     console.log((sse[allClients[i]]);
             }
         }
     }
@@ -62,10 +72,10 @@ function disableMultiplayer() {
     window.multiplayer = false;
     console.log(multiplayer);
     for (var i = 0; i < allClients.length; i++) {
-        if (typeof serversideEntities[allClients[i]] != undefined)
-            removeMinifiedEntity( serversideEntities[allClients[i]] );
+        if (typeof sse[allClients[i]] != undefined)
+            removeMinifiedEntity( sse[allClients[i]] );
     }
-    serversideEntities = 0;
+    sse = 0;
 }
 
 function enableMultiplayer() {

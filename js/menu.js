@@ -1,6 +1,6 @@
 function pauseMenu() {
     console.log(document.getElementsByClassName("menu")[0].style.marginLeft);
-    if (document.getElementsByClassName("menu")[0].style.marginLeft == "-100%"){
+    if (document.getElementsByClassName("menu")[0].style.marginLeft == "-300%"){
         document.getElementsByClassName("menu")[0].style.marginLeft = "0px";
         menuShown = true;
         if (typeof newLevel == "undefined" || newLevel) {
@@ -10,7 +10,7 @@ function pauseMenu() {
         }
     }
     else{
-        document.getElementsByClassName("menu")[0].style.marginLeft = "-100%";
+        document.getElementsByClassName("menu")[0].style.marginLeft = "-300%";
         menuShown = false;
         document.styleSheets[0].cssRules[document.styleSheets[0].cssRules.length - 1].style.filter = "";
     }
