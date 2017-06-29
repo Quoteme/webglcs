@@ -1,6 +1,47 @@
 // entity to entity collision detection
-function e2eCollision(entityOne, entityTwo){
+function e2eCollision(e1, e2){
+    var collisionDetected = false;
 
+    // find minimal and maximal values of x y and z from both objects
+    // the function at the end determines if < or > should be used (min or max value should be returned)
+    min1 = getLimit(e1, function(a, b){ return a < b});
+    max1 = getLimit(e1, function(a, b){ return a > b});
+    min2 = getLimit(e2, function(a, b){ return a < b});
+    max2 = getLimit(e2, function(a, b){ return a > b});
+
+    function getLimit(e, compare) {
+        v = e.geometry.vertices;
+        tempLimit = {
+            "x" : v[0].x,
+            "y" : v[0].y,
+            "z" : v[0].z
+        }
+        for (var i = 0; i < v.length; i++) {
+            if (compare(v[i].x, tempLimit.x)) {
+                tempLimit.x = v[i].x;
+            }
+            if (compare(v[i].y, tempLimit.y)) {
+                tempLimit.y = v[i].y;
+            }
+            if (compare(v[i].z, tempLimit.z)) {
+                tempLimit.z = v[i].z;
+            }
+        }
+        tempLimit.x += e.position.x;
+        tempLimit.y += e.position.y;
+        tempLimit.z += e.position.z;
+        return tempLimit;
+    }
+
+    // actual collision detection, just like with normal squares
+    // z currently not implemented
+    if (min1.x > min2.x && min1.x < max2.x &&
+        min1.y > min2.y && min1.y < max2.y ||
+        min2.x > min1.x && min2.x < max1.x &&
+        min2.y > min1.y && min2.y < max1.y) {
+            collisionDetected = true;
+    }
+    return collisionDetected;
 }
 
 // entity to map collsion detection
@@ -55,6 +96,29 @@ function e2mCollision(entity_position) {
 
     }
     return collision;
+}
+
+function updateBulletCollision() {
+    for (var i = 0; i < localBullets.length; i++) {
+        for (var j = 0; j < allCurrentEntities.length; j++) {
+            if (allCurrentEntities[j] != localBullets[i].owner) {
+                if ( e2eCollision(localBullets[i].mesh, entityList[allCurrentEntities[j]].mesh) ) {
+                    if (localBullets[i].props.collision.counter >= 0){
+                        localBullets[i].props.collision.counter--;
+                        entityList[allCurrentEntities[j]].health -= localBullets[i].props.damage;
+                    }
+                }
+            }
+        }
+        for (prop in minifiedEntityList) {
+            if (e2eCollision(localBullets[i].mesh, minifiedEntityList[prop].mesh)) {
+                if (localBullets[i].props.collision.counter >= 0){
+                    localBullets[i].props.collision.counter--;
+                    socket.emit("weaponDamage", {"damage": localBullets[i].props.damage, "victim": prop} );
+                }
+            }
+        }
+    }
 }
 
 function runFriction(entity, friction, airResistance, minimalVelocity, terminalVelocity) {

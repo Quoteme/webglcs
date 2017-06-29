@@ -34,6 +34,10 @@
             "z": "0"
         }
     ],
+    "collision" :{
+        "energyloss" : 0.5,
+        "counter" : 1
+    },
     "damage" : 6,
     "speed" : 3,
     "knockbackTime" : 100,

@@ -29,7 +29,7 @@ multiplayer = true;
 menuShown = true;
 currentFrame = 0; // counts all frames that have been drawn
 
-entityList = new Array();
+entityList = new Object();
 
 init();
 animate();
@@ -46,22 +46,22 @@ function init() {
 function animate() {
     function update() {
         if(!newLevel){
-            // update all entities collision, this is needed for the controles and gravity and stuff
+            // collision update
             for (var i = 0; i < allCurrentEntities.length; i++) {
                 entityList[allCurrentEntities[i]].collision = e2mCollision(entityList[allCurrentEntities[i]].position);
             }
-
+            // player movement
             for (var i = 0; i < allCurrentEntities.length; i++) {
                 moveEntity(allCurrentEntities[i])
-
                 runFriction(entityList[allCurrentEntities[i]], 0.7, 0.9, 0.01, 2);
                 if (entityList[allCurrentEntities[i]].gravity)
                     gravity(entityList[allCurrentEntities[i]], entityList[allCurrentEntities[i]].fallSpeed, 2);
                 collisionStop(entityList[allCurrentEntities[i]]);
             }
-            // console.log(entityList[player.id].collision);
 
+            // update Bullets
             updateBullets();
+            updateBulletCollision();
 
             // only allow the movement if the player does not have the menu open
             if (!menuShown)

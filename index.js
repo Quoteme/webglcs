@@ -14,7 +14,6 @@ app.use(express.static(__dirname));
 // handle the connection of a user
 io.on('connection', function(socket){
     console.log('a user connected : ' + socket.id);
-    socket.broadcast.emit("new client", socket.id);
 
     socket.on('disconnect', function(){
         console.log('user disconnected : ' + socket.id);
@@ -28,6 +27,14 @@ io.on('connection', function(socket){
     // miscelleaus other functions
     socket.on('chat message', function(msg){
         io.emit('chat message', [socket.id, msg]);
+    });
+
+    socket.on('give ownID', function(data){
+        io.sockets.connected[socket.id].emit('get ownID', socket.id);
+    });
+
+    socket.on('weaponDamage', function(data){
+        io.emit('damageReceived', data);
     });
 
     socket.on('request refreshLvlSel', function(folder){

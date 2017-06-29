@@ -1,12 +1,19 @@
 updateTimer = 25;
 sse = new Object(); // serversideEntities
 ssBullets = new Object(); // serverside bullets
+ownNetworkID = undefined;
 
 setInterval(function () {
     if (typeof(player) == "object" && multiplayer) {
         socket.emit("entity update", {"minifiedEntityData": miniEntityData(entityList[player.id]), "mlb": minifiedLocalBullets(localBullets)} );
     }
 }, updateTimer);
+
+// get Own id
+socket.emit("give ownID");
+socket.on('get ownID', function(id){
+    ownNetworkID = id;
+});
 
 socket.on('receiveEntity', function(data){
     if (typeof sse[data.id] == "undefined") {
@@ -67,6 +74,12 @@ socket.on('receiveEntity', function(data){
     sse[data.id] = data.entity;
     sse[data.id].id = data.id;
     sse[data.id].bullets = data.ssBullets;
+});
+
+socket.on('damageReceived', function(data){
+    if (data.victim == ownNetworkID) {
+        entityList[player.id].health -= data.damage;
+    }
 });
 
 socket.on('disconnected', function(id){

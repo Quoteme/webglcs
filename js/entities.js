@@ -77,7 +77,7 @@ function Entity(id, x, y, z, width, height, imgURL, health){
                     "decay": parent.weapon.decay, "weight": parent.weapon.weight,
                     "animation": parent.weapon.animation, "trajectory": parent.weapon.trajectory[i],
                     "bullet" : parent.weapon.bullet, "knockback" : parent.weapon.knockback,
-                    "collision" : parent.weapon.collision});
+                    "collision" : _.cloneDeep(parent.weapon.collision), "damage" : parent.weapon.damage});
             }
         }
     }

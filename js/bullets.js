@@ -4,16 +4,16 @@ ssBullets = new Array(); // serverside Bullets
 function spawnBullet(owner, props){
 	localBullets[localBullets.length] = new Object();
     // var texture = new THREE.TextureLoader().load( 'textures/crate.gif' );
-	localBullets[localBullets.length-1].geometry = new THREE.BoxBufferGeometry( props.bullet.width, props.bullet.height, props.bullet.depth );
+	localBullets[localBullets.length-1].geometry = new THREE.BoxGeometry( props.bullet.width, props.bullet.height, props.bullet.depth );
 	localBullets[localBullets.length-1].material = new THREE.MeshBasicMaterial( { color: 0xffffff/*map: texture*/ } );
 	localBullets[localBullets.length-1].mesh = new THREE.Mesh( localBullets[localBullets.length-1].geometry, localBullets[localBullets.length-1].material );
     localBullets[localBullets.length-1].mesh.position.set(props.origin.x, props.origin.y, props.origin.z);
 	localBullets[localBullets.length-1].mesh.rotation.z = -1 * angleBetweenObjects(THREEx.ObjCoord.cssPosition(entityList[player.id].mesh, camera,renderer), cursor);
 	scene.add( localBullets[localBullets.length-1].mesh );
 	localBullets[localBullets.length-1].timer = 0;
-	localBullets[localBullets.length-1].collisionCounter = 0;
 	localBullets[localBullets.length-1].currentSpeed = props.speed;
 	localBullets[localBullets.length-1].props = props;
+	localBullets[localBullets.length-1].owner = owner;
 	localBullets[localBullets.length-1].props.rotation = -1 * angleBetweenObjects(THREEx.ObjCoord.cssPosition(entityList[player.id].mesh, camera,renderer), cursor);
 
 	// calculate the knockback at the moment in time the player shoots / aka 0
