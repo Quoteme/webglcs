@@ -30,7 +30,6 @@
 			<div class="subMenu layer2" id="play">
 				<div class="category" onclick="pauseMenu();multiplayer=false;changeLevel(getElementById('levelName').value, getElementById('memorySpace').value)">Singleplayer</div>
 				<div class="category" onclick="pauseMenu();multiplayer=true;changeLevel(getElementById('levelName').value, getElementById('memorySpace').value)">Multiplayer</div>
-				<div class="category" onclick="showMenuPart(3, 'smashBros')">Smash Bros</div>
 			</div>
 			<div class="subMenu layer2" id="options">
 				<div class="category" onclick="showMenuPart(3, 'online')">Online</div>
@@ -43,13 +42,6 @@
 			<div class="subMenu layer3" id="online">
 				<div class="category">Multiplayer</div>
 				<div class="category">Nickname: <input type="text" name="name" value="Anon" id="nickname"></div>
-			</div>
-			<div class="subMenu layer3" id="smashBros">
-				<div class="category">Handycap <input type="number" name="name" value="0">%</div>
-				<div class="category" onclick="refreshLvlSel(document.getElementById('levelURL').value); showMenuPart(4, 'levelList')">Level</div>
-				<div class="category">Lives <input type="number" name="name" value="3"></div>
-				<div class="category">Max Players <input type="number" name="name" value="4"></div>
-				<div class="category">Start</div>
 			</div>
 			<div class="subMenu layer3" id="credits">
 				<div class="category">A game by Luca Leon Happel ©2016-2017</div>

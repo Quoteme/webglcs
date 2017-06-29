@@ -21,8 +21,8 @@ io.on('connection', function(socket){
         socket.broadcast.emit("disconnected", socket.id);
     });
 
-    socket.on('entity update', function(minifiedEntityData){
-        socket.broadcast.emit("receiveEntity", {"entity": minifiedEntityData, "id": socket.id});
+    socket.on('entity update', function(data){
+        socket.broadcast.emit("receiveEntity", {"entity": data.minifiedEntityData, "ssBullets": data.mlb, "id": socket.id});
     });
 
     // miscelleaus other functions

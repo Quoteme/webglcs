@@ -1,4 +1,5 @@
 localBullets = new Array();
+ssBullets = new Array(); // serverside Bullets
 
 function spawnBullet(owner, props){
 	localBullets[localBullets.length] = new Object();
@@ -63,7 +64,48 @@ function updateBullets() {
 	}
 }
 
+function minifiedLocalBullets(bulletArr) {
+	temp = new Array();
+	for (var i = 0; i < bulletArr.length; i++) {
+		temp[i] = new minifiedBullet({
+			"color": rgbToHex(bulletArr[i].mesh.material.color.r *255, bulletArr[i].mesh.material.color.g * 255, bulletArr[i].mesh.material.color.b * 255),
+			"size": {
+				"x": bulletArr[i].mesh.geometry.parameters.width,
+				"y": bulletArr[i].mesh.geometry.parameters.height,
+				"z": bulletArr[i].mesh.geometry.parameters.depth
+			},
+			"pos": {
+				"x": bulletArr[i].mesh.position.x,
+				"y": bulletArr[i].mesh.position.y,
+				"z": bulletArr[i].mesh.position.z
+			},
+			"rotation":{
+				"x" : bulletArr[i].mesh.rotation._x,
+				"y" : bulletArr[i].mesh.rotation._y,
+				"z" : bulletArr[i].mesh.rotation._z,
+			}
+		})
+	}
+	return temp;
+}
+
+function minifiedBullet(props) {
+	this.color = props.color || "#ffffff";
+	this.size = props.size || {"x": 4, "y": 2, "z": 2};
+	this.pos = props.pos || {"x": 0, "y": 0, "z": 0};
+	this.rotation = props.rotation || {"x": 0, "y": 0, "z": 0};
+}
+
 function hex23js(input) { // hex to threejs hex
 	output = input.replace("#", "0x");
 	return output;
+}
+
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
