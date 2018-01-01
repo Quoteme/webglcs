@@ -5,6 +5,11 @@ var io = require('socket.io')(http);
 var fs = require('fs');
 var port = process.env.PORT || 3000;
 
+// error handler
+process.on('uncaughtException', function (err) {
+  console.log('Caught exception: ' + err);
+});
+
 // send html files to client
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
@@ -27,6 +32,10 @@ io.on('connection', function(socket){
     // miscelleaus other functions
     socket.on('chat message', function(msg){
         io.emit('chat message', [socket.id, msg]);
+    });
+
+    socket.on('increaseScore', function(data){
+        io.emit('increaseScore', data);
     });
 
     socket.on('give ownID', function(data){

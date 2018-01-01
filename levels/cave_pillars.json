@@ -6,7 +6,7 @@
          "name":"Hintergrund",
          "opacity":0.270000010728836,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":60,
          "x":0,
          "y":0
@@ -20,8 +20,12 @@
             {
              "collision":"true"
             },
+         "propertytypes":
+            {
+             "collision":"string"
+            },
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":60,
          "x":0,
          "y":0
@@ -35,8 +39,12 @@
             {
              "flat":"0.42"
             },
+         "propertytypes":
+            {
+             "flat":"string"
+            },
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":60,
          "x":0,
          "y":0
@@ -50,8 +58,12 @@
             {
              "sameLayer":"true"
             },
+         "propertytypes":
+            {
+             "sameLayer":"string"
+            },
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":60,
          "x":0,
          "y":0
@@ -66,8 +78,13 @@
              "liquid":"0.75",
              "sameLayer":"true"
             },
+         "propertytypes":
+            {
+             "liquid":"string",
+             "sameLayer":"string"
+            },
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":60,
          "x":0,
          "y":0
@@ -92,8 +109,12 @@
             {
              "flat":"0.5"
             },
+         "propertytypes":
+            {
+             "flat":"string"
+            },
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":60,
          "x":0,
          "y":0
@@ -112,8 +133,17 @@
              "lightIntensity":"1",
              "lightShadow":"false"
             },
+         "propertytypes":
+            {
+             "light":"string",
+             "lightColor":"string",
+             "lightDecay":"string",
+             "lightDistance":"string",
+             "lightIntensity":"string",
+             "lightShadow":"string"
+            },
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":60,
          "x":0,
          "y":0
@@ -126,6 +156,10 @@
          "properties":
             {
              "flat":"-0.001"
+            },
+         "propertytypes":
+            {
+             "flat":"string"
             },
          "type":"tilelayer",
          "visible":true,
@@ -142,6 +176,10 @@
             {
              "flat":"-0.001"
             },
+         "propertytypes":
+            {
+             "flat":"string"
+            },
          "type":"tilelayer",
          "visible":true,
          "width":60,
@@ -150,7 +188,6 @@
         }, 
         {
          "draworder":"topdown",
-         "height":45,
          "name":"entities",
          "objects":[
                 {
@@ -161,6 +198,10 @@
                  "properties":
                     {
                      "img":"player_image"
+                    },
+                 "propertytypes":
+                    {
+                     "img":"string"
                     },
                  "rotation":0,
                  "type":"player",
@@ -175,35 +216,38 @@
              "ambiColor":"#808080",
              "ambiStrengt":"0.55",
              "background":"#080808",
+             "entityLayer":"true",
              "player":"quote",
              "z":"2"
             },
+         "propertytypes":
+            {
+             "ambiColor":"string",
+             "ambiStrengt":"string",
+             "background":"string",
+             "entityLayer":"string",
+             "player":"string",
+             "z":"string"
+            },
          "type":"objectgroup",
-         "visible":false,
-         "width":60,
+         "visible":true,
          "x":0,
          "y":0
         }],
  "nextobjectid":2,
  "orientation":"orthogonal",
- "properties":
-    {
-
-    },
  "renderorder":"right-down",
+ "tiledversion":"2017.06.27",
  "tileheight":32,
  "tilesets":[
         {
+         "columns":16,
          "firstgid":1,
          "image":"..\/img\/dokucraft.png",
          "imageheight":544,
          "imagewidth":512,
          "margin":0,
          "name":"basis",
-         "properties":
-            {
-
-            },
          "spacing":0,
          "tilecount":272,
          "tileheight":32,
@@ -214,9 +258,17 @@
                  "flat":"0"
                 }
             },
+         "tilepropertytypes":
+            {
+             "59":
+                {
+                 "flat":"string"
+                }
+            },
          "tilewidth":32
         }],
  "tilewidth":32,
+ "type":"map",
  "version":1,
  "width":60
 }

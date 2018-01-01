@@ -127,21 +127,25 @@
                 }
                 // now give each layer specific properties and a name
                 output.layers[0].name = "Hintergrund";
-                output.layers[1].name = "Mittelgrund";
+					output.layers[1].properties = new Object();
+					output.layers[1].properties.collision = 0;
+				output.layers[1].name = "Mittelgrund";
                     output.layers[1].properties = new Object();
-                    output.layers[1].properties.collision = "true";
+                    output.layers[1].properties.collision = 1;
                 output.layers[2].name = "Vordergrund";
+					output.layers[1].properties = new Object();
+					output.layers[1].properties.collision = 2;
                 output.layers[3].name = "Flach";
                     output.layers[3].properties = new Object();
-                    output.layers[3].properties.flat = "0.5";
+                    output.layers[3].properties.flat = 0.5;
                 output.layers[4].name = "Lichter";
                     output.layers[4].properties = new Object();
-                    output.layers[4].properties.light = "true";
+                    output.layers[4].properties.light = true;
                     output.layers[4].properties.lightColor = "#ffbfaf";
-                    output.layers[4].properties.lightDecay = "1";
-                    output.layers[4].properties.lightDistance = "100";
-                    output.layers[4].properties.lightIntensity = "1";
-                    output.layers[4].properties.lightShadow = "false";
+                    output.layers[4].properties.lightDecay = 1;
+                    output.layers[4].properties.lightDistance = 100;
+                    output.layers[4].properties.lightIntensity = 1;
+                    output.layers[4].properties.lightShadow = false;
                 // now generate the object layer
                 output.layers[5] = new Object();
                     output.layers[5].draworder = "topdown";

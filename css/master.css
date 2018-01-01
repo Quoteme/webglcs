@@ -52,7 +52,7 @@ canvas{
 }
 
 .category{
-    border: 5px solid #AA1111;
+    border: 3px solid #AA1111;
     background-color: #000;
     font-size: 18px;
     padding: 10px;
@@ -62,7 +62,7 @@ canvas{
 }
 
 .category:hover{
-    border-bottom-width: 10px;
+    background-color: #333;
     transition: 0.5s;
 }
 

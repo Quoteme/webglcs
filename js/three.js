@@ -606,7 +606,7 @@
 				default: throw new Error( 'index is out of range: ' + index );
 
 			}
-			
+
 			return this;
 
 		},
@@ -1374,7 +1374,7 @@
 				default: throw new Error( 'index is out of range: ' + index );
 
 			}
-			
+
 			return this;
 
 		},
@@ -2683,7 +2683,7 @@
 				default: throw new Error( 'index is out of range: ' + index );
 
 			}
-			
+
 			return this;
 
 		},
@@ -10593,7 +10593,7 @@
 
 		this.userData = {};
 
-		this.onBeforeRender = function(){}; 
+		this.onBeforeRender = function(){};
 		this.onAfterRender = function(){};
 
 	}
@@ -19482,7 +19482,7 @@
 			}
 
 			scope.numPlanes = nPlanes;
-			
+
 			return dstArray;
 
 		}
@@ -21200,7 +21200,7 @@
 					material.needsUpdate = true;
 
 				} else if ( materialProperties.numClippingPlanes !== undefined &&
-					( materialProperties.numClippingPlanes !== _clipping.numPlanes || 
+					( materialProperties.numClippingPlanes !== _clipping.numPlanes ||
 	 				  materialProperties.numIntersection  !== _clipping.numIntersection ) ) {
 
 					material.needsUpdate = true;

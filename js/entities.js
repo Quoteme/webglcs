@@ -7,25 +7,32 @@ entityIdSpace = Math.pow(10, 8);
 function EntityID(id) {
     this.id = id || Math.round(Math.random()*entityIdSpace);
 }
-function Entity(id, x, y, z, width, height, imgURL, health){
-    if (imgURL == "player_image")
-        imgURL = document.getElementById("playerImageLocation").value;
+function Entity(props){
+	// props: id, position[x, y, z], size[width, height], imgURL, health
+    if (props.imgURL == "player_image")
+        props.imgURL = document.getElementById("playerImageLocation").value;
 
-    this.id = id || new EntityID();
+    this.id = props.id || new EntityID();
     // add this new entity to the allCurrentEntities array, that stores all "local" / not serverside entities
     allCurrentEntities.push(this.id);
     // load the texture used by the entity
     // this image will then be drawn on a canvas, which will then be drawn onto a plain in Three.js
     // effectively allowing non-power of 2 images to be used
     this.img = new Image();
-    this.img.src = imgURL;
+    this.img.src = props.imgURL;
+
     this.visible = true;
     this.opacity = 1;
     this.direction = true; // true = left | false = right
-    this.maxHealth = health || 3;
+    this.maxHealth = props.health || 3;
     this.health = this.maxHealth;
+    this.lifes = 1;
+    this.score = 0;
+    this.lastHit = ""; // the player/ thing that last damaged the entity
     this.name = document.getElementById("nickname").value;
     this.weapon = "";
+    this.knockbackResistance = 0;
+    this.friendlyFire = false;
 
     this.mesh = null; // will get a value durning displayEntity(...);
 
@@ -35,11 +42,12 @@ function Entity(id, x, y, z, width, height, imgURL, health){
     this.airSpeed = 0.5;
     this.fallSpeed = 0.105; // slow  0.095 | fast 0.115
     this.airDrag = 0.98;
-    this.size = {x:width, y:height };
-    this.position = {x:x, y:y, z:z};
+    this.size = {x:props.size.width, y:props.size.height };
+    this.position = {x:props.position.x, y:props.position.y, z:props.position.z};
     this.velocity = {x:0, y:0, z:0};
     // this.momentum = {x:0, y:0, z:0};
-    this.ammunition = 0;
+    this.ammo = 0;
+    this.maxAmmo = 0;
     this.rounds = 0;
     this.reloadTimer = 0;
 
@@ -104,6 +112,30 @@ function Entity(id, x, y, z, width, height, imgURL, health){
         parent.position.y -= p;
         parent.mesh.position.y -= p;
     }
+	this.moveBehind = function(p){
+		// positiv = ↑
+		// negative = ↓
+		console.log(e2mCollision({x:parent.position.x, y:parent.position.y, z:parent.position.z}).front);
+		if (p > 0) {
+			for (var i = 0; i < p; i++) {
+	            if (e2mCollision({x:parent.position.x, y:parent.position.y, z:parent.position.z-i }).behind != 0){
+	                p = i;
+	                break;
+	            }
+	        }
+		}else if (p < 0) {
+			var i = 0;
+			while (i>p) {
+				if (e2mCollision({x:parent.position.x, y:parent.position.y, z:parent.position.z+i }).front != 0){
+					p = i;
+					break
+				}
+				i-= 0.1;
+			}
+		}
+        parent.position.z -= p;
+        parent.mesh.position.z -= p;
+    }
     // use gravity for this entity?
     this.gravity = true;
 
@@ -115,7 +147,7 @@ function Entity(id, x, y, z, width, height, imgURL, health){
     function loadJSON(callback) {
         var xobj = new XMLHttpRequest();
             xobj.overrideMimeType("application/json");
-        xobj.open('GET', imgURL.replace(/.png|.jpg|.jpeg|.gif/, ".json"), true); // Replace 'my_data' with the path to your file
+        xobj.open('GET', props.imgURL.replace(/.png|.jpg|.jpeg|.gif/, ".json"), true); // Replace 'my_data' with the path to your file
         xobj.onreadystatechange = function () {
               if (xobj.readyState == 4 && xobj.status == "200") {
                 // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
@@ -192,9 +224,9 @@ function displayEntity(entityName, autofocus) {
     // material.needsUpdate = true;
 
     entityName.mesh = new THREE.Mesh( geometry, material );
-    entityName.mesh.position.set (entityName.position.x, entityName.position.y + 1, entityName.position.z + blockSize * 0.25);
+    entityName.mesh.position.set (entityName.position.x, entityName.position.y + 1, entityName.position.z + options.generation.blocksize * 0.25);
     // due to some problems with collision, all sprites must be rendered one pixel above
-    if (entityShadows) {
+    if (options.generation.entityShadows) {
         entityName.mesh.castShadow = true;
         entityName.mesh.receiveShadow = true;
     }
@@ -203,10 +235,10 @@ function displayEntity(entityName, autofocus) {
     // entityName.mesh.castShadow = true;
     // entityName.mesh.receiveShadow = true;
     if (autofocus)
-        focusEntity(entityName, camera);
+        focusEntity(entityName);
 }
 
-function focusEntity(entity, cameraName, depth, speed, lookAt) {
+function focusEntity(entity, speed, lookAt) {
     // focuses an entity by setting the camera X & Y to the same
     // if depth is TRUE, then the camera will also focus on Z axis
     // TODO: add camera drag / gradually move to the entity
@@ -215,29 +247,36 @@ function focusEntity(entity, cameraName, depth, speed, lookAt) {
     }
 
     // stabilize the camera, so that it wont move back and forth every frame
-    if (Math.abs(cameraName.position.x - entity.position.x) < speed.x) {
-        speed.x = Math.abs(cameraName.position.x - entity.position.x);
+    if (Math.abs(camera.position.x - entity.position.x) < speed.x) {
+        speed.x = Math.abs(camera.position.x - entity.position.x);
     }
-    if (Math.abs(cameraName.position.y - entity.position.y) < speed.y) {
-        speed.y = Math.abs(cameraName.position.y - entity.position.y);
+    if (Math.abs(camera.position.y - entity.position.y) < speed.y) {
+        speed.y = Math.abs(camera.position.y - entity.position.y);
     }
     // finally set the real position
-    cameraName.position.x += -1 * Math.sign(cameraName.position.x - entity.position.x) * speed.x;
-    cameraName.position.y += -1 * Math.sign(cameraName.position.y - entity.position.y) * speed.y;
-    if (depth) {
-        cameraName.position.z = cameraDistance * 32 + 100;
-    }
+    camera.position.x += -1 * Math.sign(camera.position.x - entity.position.x) * speed.x;
+    camera.position.y += -1 * Math.sign(camera.position.y - entity.position.y) * speed.y;
+    camera.position.z = (entity.position.z / options.generation.blocksize) * options.generation.blocksize + options.camera.zoom;
     if (lookAt) {
-        cameraName.lookAt(entity.position);
+        camera.lookAt(entity.position);
     }
 
-    // cameraName.position.set(entity.position.x, entity.position.y + 20, depth ? cameraDistance * 32 + 100 : cameraName.position.z);
+	if (camera.inOrthographicMode) {
+		camera.position.y += options.camera.orthograpic.marginTop;
+		camera.position.x += options.camera.orthograpic.marginLeft;
+	}else {
+		camera.position.y += options.camera.perspective.marginTop;
+		camera.position.x += options.camera.perspective.marginLeft;
+	}
+
+    // camera.position.set(entity.position.x, entity.position.y + 20, depth ? options.camera.distance.z * 32 + 100 : cameraName.position.z);
 }
 
 function moveEntity(entityID) {
     // calcutates the entity velocity to an actual X & Y position
     entityList[entityID].moveDown(entityList[entityID].velocity.y * entityList[entityID].speed);
     entityList[entityID].moveRight(entityList[entityID].velocity.x * entityList[entityID].speed);
+    entityList[entityID].moveBehind(entityList[entityID].velocity.z * entityList[entityID].speed);
 }
 
 function animateEntities() {
@@ -277,6 +316,9 @@ function miniEntityData(base, newID) {
     entity = new Object();
     entity.id = newID;
 
+    entity.lifes = base.lifes;
+    entity.score = base.score;
+    entity.lastHit = base.lastHit;
     entity.src = base.img.src;
     entity.size = base.size;
     entity.visible = base.visible;
@@ -326,7 +368,7 @@ function displayMinifiedEntity(entity) {
     minifiedEntityList[entity.id].mesh.position.set (entity.position.x, entity.position.y, entity.position.z);
     // due to some problems with collision, all sprites must be rendered one pixel above
 
-    if (entityShadows) {
+    if (options.generation.entityShadows) {
         minifiedEntityList[entity.id].mesh.castShadow = true;
         minifiedEntityList[entity.id].mesh.receiveShadow = true;
     }
@@ -362,4 +404,20 @@ function updateMinifiedEntity(entity) {
 function removeMinifiedEntity(entityid) {
     scene.remove(minifiedEntityList[entityid].mesh);
     delete minifiedEntityList[entityid];
+}
+
+function moveTo (entity, pos) {
+    entity.health = entity.maxHealth;
+    entity.moveRight(pos.x - entity.position.x)
+    entity.moveDown((pos.y - entity.position.y) * -1);
+}
+function respawnPosition(entryPoint, layer) {
+    var layer = layer || "entities";
+    var entityLayer = findByProperty(level[currentLevel].layers, "name", layer);
+    var quoteObject = findByProperty(level[currentLevel].layers[entityLayer].objects, "name", entryPoint);
+    position = {
+        "x" : level[currentLevel].layers[entityLayer].objects[quoteObject].x / 2,
+        "y" : level[currentLevel].layers[entityLayer].objects[quoteObject].y / 2 * -1
+    }
+    return position;
 }

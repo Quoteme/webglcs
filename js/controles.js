@@ -8,19 +8,69 @@ function controle(entity){
     if(keyboard.pressed("space") && entity.collision.bottom != 0){
         entity.velocity.y = -2 * (1-entity.collision.liquid);
     }
-    if(keyboard.pressed("A") && !entity.collision.left){
-        if (entity.collision.bottom != 0) {
-            entity.velocity.x -= entity.speedOnFoot;
-        }else {
-            entity.velocity.x -= entity.speedInAir;
-        }
+	function walkLeft() {
+		if (!entity.collision.left) {
+			if (entity.collision.bottom != 0) {
+				entity.velocity.x -= entity.speedOnFoot;
+			}else {
+				entity.velocity.x -= entity.speedInAir;
+			}
+		}
+	}
+	function walkRight() {
+		if (!entity.collision.right) {
+			if (entity.collision.bottom != 0) {
+				entity.velocity.x += entity.speedOnFoot;
+			}else {
+				entity.velocity.x += entity.speedInAir;
+			}
+		}
+	}
+	function walkBack() {
+		if (!entity.collision.behind) {
+			if (entity.collision.bottom != 0) {
+				entity.velocity.z += entity.speedOnFoot;
+			}else {
+				entity.velocity.z += entity.speedInAir;
+			}
+		}
+	}
+	function walkFront() {
+		if (!entity.collision.front) {
+			if (entity.collision.bottom != 0) {
+				entity.velocity.z -= entity.speedOnFoot;
+			}else {
+				entity.velocity.z -= entity.speedInAir;
+			}
+		}
+	}
+    if(keyboard.pressed("A")){
+		if (options.camera.zoom >= 0) {
+			walkLeft();
+		}else {
+			walkRight();
+		}
     }
-    if(keyboard.pressed("D") && !entity.collision.right){
-        if (entity.collision.bottom != 0) {
-            entity.velocity.x += entity.speedOnFoot;
-        }else {
-            entity.velocity.x += entity.speedInAir;
-        }
+    if(keyboard.pressed("D")){
+		if (options.camera.zoom >= 0) {
+			walkRight();
+		}else {
+			walkLeft();
+		}
+	}
+	if(keyboard.pressed("W")){
+		if (options.camera.zoom >= 0) {
+			walkBack();
+		}else {
+			walkFront();
+		}
+    }
+	if(keyboard.pressed("S")){
+		if (options.camera.zoom >= 0) {
+			walkFront();
+		}else {
+			walkBack();
+		}
     }
     if(keyboard.pressed("shift")){
 
@@ -31,16 +81,16 @@ function controle(entity){
         entity.usedAnimation = "fallLookUp";
     else if(entity.collision.bottom == 0 && keyboard.pressed("S"))
         entity.usedAnimation = "fallLookDown";
-    else if(keyboard.pressed("W") && keyboard.pressed("A") || keyboard.pressed("W") && keyboard.pressed("D"))
-        entity.usedAnimation = "upRun";
+    // else if(keyboard.pressed("W") && keyboard.pressed("A") || keyboard.pressed("W") && keyboard.pressed("D"))
+    //     entity.usedAnimation = "upRun";
     else if(entity.collision.bottom == 0 && entityList[player.id].velocity.y >= 0)
         entity.usedAnimation = "ascend";
     else if(entity.collision.bottom == 0 && entityList[player.id].velocity.y < 0)
         entity.usedAnimation = "fall";
-    else if(keyboard.pressed("D") || keyboard.pressed("A"))
+    else if(keyboard.pressed("D") || keyboard.pressed("A") || keyboard.pressed("W") || keyboard.pressed("S"))
         entity.usedAnimation = "run";
-    else if(keyboard.pressed("S"))
-        entity.usedAnimation = "look";
+    // else if(keyboard.pressed("S"))
+    //     entity.usedAnimation = "look";
     else if (keyboard.pressed("W"))
         entity.usedAnimation = "up"
     else
@@ -48,10 +98,10 @@ function controle(entity){
 
     // camera
     if(keyboard.pressed("N")){
-        camera.position.z += 4;
+        options.camera.zoom += 4;
     }
     if(keyboard.pressed("M")){
-        camera.position.z -= 4;
+        options.camera.zoom -= 4;
     }
     if (cursor.down) {
         entityList[player.id].shootWeapon();

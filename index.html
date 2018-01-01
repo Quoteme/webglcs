@@ -28,8 +28,8 @@
 			</div>
 
 			<div class="subMenu layer2" id="play">
-				<div class="category" onclick="pauseMenu();multiplayer=false;changeLevel(getElementById('levelName').value, getElementById('memorySpace').value)">Singleplayer</div>
-				<div class="category" onclick="pauseMenu();multiplayer=true;changeLevel(getElementById('levelName').value, getElementById('memorySpace').value)">Multiplayer</div>
+				<div class="category" onclick="pauseMenu();options.multiplayer.singleplayer=false;changeLevel(getElementById('levelName').value, getElementById('memorySpace').value)">Singleplayer</div>
+				<div class="category" onclick="pauseMenu();options.multiplayer.singleplayer=true;changeLevel(getElementById('levelName').value, getElementById('memorySpace').value)">Multiplayer</div>
 			</div>
 			<div class="subMenu layer2" id="options">
 				<div class="category" onclick="showMenuPart(3, 'online')">Online</div>
@@ -51,18 +51,20 @@
 			<div class="subMenu layer3" id="video">
 				<div class="category" onclick="showMenuPart(4, 'cameraType')">camera type</div>
 				<div class="category" onclick="showMenuPart(4, 'ambientLight')">ambient light</div>
+				<div class="category" onclick="options.generation.boxCulling = !options.generation.boxCulling;document.getElementById('boxCulling').innerHTML = options.generation.boxCulling">box-culling: <span id="boxCulling">true</span></div>
+				<div class="category" onclick="showMenuPart(4, 'worldBuilder')">worldBuilder</div>
 				<div class="category">shadows</div>
 				<div class="category">bump mapping</div>
 			</div>
 			<div class="subMenu layer3" id="levels">
 				<div class="category" onclick="changeLevel(getElementById('levelName').value, getElementById('memorySpace').value)">change Level</div>
 				<div class="category" onclick="refreshLvlSel(document.getElementById('levelURL').value); showMenuPart(4, 'levelList')">show levels for: <input type="text" name="name" value="levels/" id="levelURL"></div>
-				<div class="category">level name: <input type="text" name="name" value="levels/cave_pillars.json" id="levelName"></div>
+				<div class="category">level name: <input type="text" name="name" value="levels/start.json" id="levelName"></div>
 				<div class="category">memory space: <input type="number" name="name" value="0" id="memorySpace"></div>
 				<div class="category"><a href="levelGen.html">new level</a></div>
 			</div>
 			<div class="subMenu layer3" id="personal">
-				<div class="category">player image: <input type="text" name="name" value="usr/chars/MyChar.png" id="playerImageLocation"></div>
+				<div class="category">player image: <input type="text" name="name" value="usr/chars/player_luca.png" id="playerImageLocation"></div>
 				<div class="category" onclick="showChars(document.getElementById('skinPreviewURL').value); showMenuPart(4, 'charList')">player image list: <input type="text" name="name" value="usr/chars/" id="skinPreviewURL"></div>
 				<div class="category">weapon: <input type="text" name="name" value="" id="chosenWeapon"></div>
 				<div class="category" onclick="weaponThumbsReload(document.getElementById('weaponLocation').value);showMenuPart(4, 'weaponList')">weapon list: <input type="text" name="name" value="usr/weapons/" id="weaponLocation"></div>
@@ -71,6 +73,10 @@
 			<div class="subMenu layer4" id="cameraType">
 				<div class="category" onclick="camera.toPerspective(); camera.setFov(75)">3D</div>
 				<div class="category" onclick="camera.toOrthographic(); camera.setFov(20)">2D</div>
+			</div>
+			<div class="subMenu layer4" id="worldBuilder">
+				<div class="category" onclick="worldBuilder = 'classic'">classic</div>
+				<div class="category" onclick="worldBuilder = 'advanced'">advanced</div>
 			</div>
 			<div class="subMenu layer4" id="ambientLight">
 				<div class="category"><input type="range" min="0" max="100" name="name" value="25" id="ambiLightSlider" onchange="document.getElementById('ambiLightValue').innerHTML = document.getElementById('ambiLightSlider').value; ambiLight.intensity = document.getElementById('ambiLightSlider').value * 0.01"><b id="ambiLightValue">25</b></div>

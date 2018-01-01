@@ -14,6 +14,10 @@ function unloadLevel(LevelName) {
         delete statusHUD;
     }
 
+	for (var i = 0; i < canvasLayer.length; i++) {
+		scene.remove(canvasLayer[i].mesh);
+	}
+
     if (typeof ambiLight !== "undefined" )
         scene.remove(ambiLight);
     allCurrentEntities = new Array();

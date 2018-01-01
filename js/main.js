@@ -15,19 +15,51 @@ renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor(0x080808, 1);
 document.body.appendChild( renderer.domElement );
+options = {
+	"camera": {
+		"orthograpic": {
+			"marginTop": 2,
+			"marginLeft": 0
+		},
+		"perspective":{
+			"marginTop": 2,
+			"marginLeft": 0
+		},
+		"distance":{
+			"x": 0,
+			"y": 0,
+			"z": 0
+		},
+		"focusEntity":{
+			"use": false,
+			"entity": 0
+		},
+		"zoom": 100
+	},
+	"collision":{
+		"frontBackErrorMargin": 0.1
+	},
+	"generation":{
+		"worldBuilder": "classic",
+		"boxCulling": true,
+		"blocksize": 16,
+		"bumpMapping": false,
+		"entityShadows": false,
+		"shadowQuality": 11,
+		"wireframe": false
+	},
+	"multiplayer":{
+		"singleplayer": false
+	}
+}
 
 newLevel = true; // true, false, "loading"
-blockSize = 16;
-shadowQuality = Math.pow(2, 11);
 currentLevel = 0;
-useBumpMapping = false;
-entityShadows = false;
 newLevelReloadBuffer = newLevelReloadTimer =  100; // this buffer counts down if the level is not loaded, and will try to reload the level after run down
 loadingCounter = 0; // counts how long the game has been loaing
-cameraDistance = 0;
-multiplayer = true;
 menuShown = true;
 currentFrame = 0; // counts all frames that have been drawn
+worldBuilder = "classic"; // advanced
 
 entityList = new Object();
 
@@ -45,6 +77,7 @@ function init() {
 
 function animate() {
     function update() {
+        // ------------- LOADED -------------
         if(!newLevel){
             // collision update
             for (var i = 0; i < allCurrentEntities.length; i++) {
@@ -58,7 +91,6 @@ function animate() {
                     gravity(entityList[allCurrentEntities[i]], entityList[allCurrentEntities[i]].fallSpeed, 2);
                 collisionStop(entityList[allCurrentEntities[i]]);
             }
-
             // update Bullets
             updateBullets();
             updateBulletCollision();
@@ -67,9 +99,17 @@ function animate() {
             if (!menuShown)
                 controle(entityList[player.id]);
 
-            focusEntity(entityList[player.id], camera, false, {"x":Math.abs(camera.position.x - entityList[player.id].position.x) * 0.05, "y":Math.abs(camera.position.y - entityList[player.id].position.y) * 0.05}, true);
+			if (options.camera.focusEntity.use) {
+	            focusEntity(entityList[options.camera.focusEntity.entity], {"x":Math.abs(camera.position.x - entityList[player.id].position.x) * 0.05, "y":Math.abs(camera.position.y - entityList[player.id].position.y) * 0.05}, true);
+			}
             animateEntities();
+
+            // level specific script
+            if (typeof level[currentLevel].gameCode.update != "undefined") {
+                level[currentLevel].gameCode.update();
+            }
         }
+        // ------------- NOT LOADED -------------
         else{
             if (newLevel == true)
                 loadTextures();
@@ -84,18 +124,6 @@ function animate() {
                     newLevelReloadTimer--;
                 }
             }
-
-            // quote = player = new EntityID();
-            // entityList[player.id] = new Entity(player.id, blockSize*level[currentLevel].width * 0.5, -blockSize*level[currentLevel].height *0.5, blockSize * 2, blockSize, blockSize, "img/chars/player.png")
-            // displayEntity(entityList[player.id], true);
-            //
-            // curly = new EntityID();
-            // entityList[curly.id] = new Entity(curly.id, blockSize*50, -blockSize*26, blockSize * 2, blockSize, blockSize, "img/chars/playerCurly.png")
-            // displayEntity(entityList[curly.id], false);
-            //
-            // temp = new EntityID();
-            // entityList[temp.id] = new Entity(temp.id, blockSize*47, -blockSize*26, blockSize * 2, blockSize, blockSize, "img/chars/playerB.png")
-            // displayEntity(entityList[temp.id], false);
         }
         currentFrame++;
     }
@@ -122,8 +150,19 @@ function animate() {
             loadScreen();
         }
 
-        renderer.render(scene, camera);
+		if (worldBuilder == "advanced" && newLevel == false) {
+			for (var v in canvasLayer) {
+				if (canvasLayer.hasOwnProperty(v)) {
+					for (var i = 0; i < canvasLayer[v].length; i++) {
+						if (canvasLayer[v][i].update) {
+							canvasLayer[v][i].draw();
+						}
+					}
+				}
+			}
+		}
 
+        renderer.render(scene, camera);
         requestAnimationFrame( render );
     };
 

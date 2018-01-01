@@ -20,6 +20,10 @@
             {
              "flat":"0.75"
             },
+         "propertytypes":
+            {
+             "flat":"string"
+            },
          "type":"tilelayer",
          "visible":true,
          "width":25,
@@ -34,6 +38,10 @@
          "properties":
             {
              "collision":"true"
+            },
+         "propertytypes":
+            {
+             "collision":"string"
             },
          "type":"tilelayer",
          "visible":true,
@@ -72,6 +80,10 @@
             {
              "flat":"0.25"
             },
+         "propertytypes":
+            {
+             "flat":"string"
+            },
          "type":"tilelayer",
          "visible":true,
          "width":25,
@@ -92,6 +104,15 @@
              "lightIntensity":"1",
              "lightShadow":"false"
             },
+         "propertytypes":
+            {
+             "light":"string",
+             "lightColor":"string",
+             "lightDecay":"string",
+             "lightDistance":"string",
+             "lightIntensity":"string",
+             "lightShadow":"string"
+            },
          "type":"tilelayer",
          "visible":true,
          "width":25,
@@ -107,6 +128,10 @@
             {
              "flat":"0.25"
             },
+         "propertytypes":
+            {
+             "flat":"string"
+            },
          "type":"tilelayer",
          "visible":true,
          "width":25,
@@ -115,7 +140,6 @@
         }, 
         {
          "draworder":"topdown",
-         "height":25,
          "name":"entities",
          "objects":[
                 {
@@ -126,6 +150,10 @@
                  "properties":
                     {
                      "img":"player_image"
+                    },
+                 "propertytypes":
+                    {
+                     "img":"string"
                     },
                  "rotation":0,
                  "type":"player",
@@ -140,35 +168,38 @@
              "ambiColor":"#808080",
              "ambiStrengt":"0.25",
              "background":"#080808",
+             "entityLayer":"true",
              "player":"quote",
              "z":"2"
             },
+         "propertytypes":
+            {
+             "ambiColor":"string",
+             "ambiStrengt":"string",
+             "background":"string",
+             "entityLayer":"string",
+             "player":"string",
+             "z":"string"
+            },
          "type":"objectgroup",
          "visible":true,
-         "width":25,
          "x":0,
          "y":0
         }],
  "nextobjectid":2,
  "orientation":"orthogonal",
- "properties":
-    {
-
-    },
  "renderorder":"right-down",
+ "tiledversion":"2017.06.27",
  "tileheight":32,
  "tilesets":[
         {
+         "columns":16,
          "firstgid":1,
          "image":"..\/img\/dokucraft.png",
          "imageheight":544,
          "imagewidth":512,
          "margin":0,
          "name":"basis",
-         "properties":
-            {
-
-            },
          "spacing":0,
          "tilecount":272,
          "tileheight":32,
@@ -179,9 +210,17 @@
                  "flat":"0.6"
                 }
             },
+         "tilepropertytypes":
+            {
+             "58":
+                {
+                 "flat":"string"
+                }
+            },
          "tilewidth":32
         }],
  "tilewidth":32,
+ "type":"map",
  "version":1,
  "width":25
 }

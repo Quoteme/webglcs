@@ -1,10 +1,12 @@
 {
-    "215" : {
-        "top" : 182,
-        "bottom" : 214,
-        "left" : 215,
-        "right" : 215,
-        "front" : 215,
-        "back" : 215
+    "spriteFix": {
+        "215" : {
+            "top" : 182,
+            "bottom" : 214,
+            "left" : 215,
+            "right" : 215,
+            "front" : 215,
+            "back" : 215
+        }
     }
 }

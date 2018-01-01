@@ -21,3 +21,10 @@ function copyImg(canvas) {
 
     return output;
 }
+
+function addImg(images, x, y) {
+	converterCanvas.width = x + images[1].width;
+    converterCanvas.height = y + images[1].height;
+
+	converterCanvas.getContext("2d").drawImage(images[0].img, -1 * x, -1 * y);
+}

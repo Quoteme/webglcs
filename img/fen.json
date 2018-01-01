@@ -1,0 +1,20 @@
+{
+    "spriteFix": {
+		"1" : {
+            "top" : 12,
+            "bottom" : 6,
+            "left" : 1,
+            "right" : 1,
+            "front" : 1,
+            "back" : 1
+        },
+		"2" : {
+            "top" : 12,
+            "bottom" : 6,
+            "left" : 1,
+            "right" : 1,
+            "front" : 1,
+            "back" : 1
+        }
+    }
+}

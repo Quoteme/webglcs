@@ -47,28 +47,62 @@ function e2eCollision(e1, e2){
 // entity to map collsion detection
 function e2mCollision(entity_position) {
     collision = new Object();
-    collision.top = false;
-    collision.bottom = false;
-    collision.left = false;
-    collision.right = false;
-    collision.inside = false;
-    // cycle thtrough all layers
-    for (var k = 0; k < level[currentLevel].layers.length; k++) {
-        // find if one layer has "collision" set to "true"
-        if(typeof(level[currentLevel].layers[k].properties) !== "undefined")
-            if(typeof(level[currentLevel].layers[k].properties.collision) !== "undefined")
-                if(level[currentLevel].layers[k].properties.collision == "true"){
-                    collision.inside = level[currentLevel].layers[k].data[Math.round(entity_position.x / blockSize) + -1 *Math.round((entity_position.y - 6) / blockSize)*level[currentLevel].width];
-                    collision.left = level[currentLevel].layers[k].data[Math.floor((entity_position.x + blockSize) / blockSize)-1 + -1 * Math.round(entity_position.y / blockSize)*level[currentLevel].width];
-                    collision.right = level[currentLevel].layers[k].data[Math.round((entity_position.x - blockSize / 2) / blockSize)+1 + -1 * Math.round(entity_position.y / blockSize)*level[currentLevel].width];
-                    collision.top = level[currentLevel].layers[k].data[Math.floor((entity_position.x + blockSize / 2) / blockSize) + -1 * (Math.floor(entity_position.y / blockSize) + 1)*level[currentLevel].width];
-                    collision.bottom = level[currentLevel].layers[k].data[(Math.floor((entity_position.x - blockSize / 2) / blockSize)+1) + -1 * ((Math.floor(entity_position.y / blockSize)+1) - 1)*level[currentLevel].width];
+    collision.top = 0;
+    collision.bottom = 0;
+    collision.left = 0;
+    collision.right = 0;
+    collision.inside = 0;
+	collision.behind = 0;
+	collision.front = 0;
+    collision.outOfBounds = false;
+    collision.bounce = 0.2;
+    collision.position = {
+        "round" : {
+            x : function(offset){ return Math.round((entity_position.x + offset) / options.generation.blocksize) },
+            y : function(offset){ return -1 * Math.round((entity_position.y + offset) / options.generation.blocksize) }
+        },
+        "floor" : {
+            x : function(offset){ return Math.floor((entity_position.x + offset) / options.generation.blocksize) },
+            y : function(offset){ return -1 * Math.floor((entity_position.y + offset) / options.generation.blocksize) - 1 }
+        }
+    };
+    // console.log(entity_position.x * 2 + " " + level[currentLevel].width * level[currentLevel].tilewidth + " " + entity_position.y * -2 + " " + level[currentLevel].height * level[currentLevel].tileheight);
+    // find out if the entity is inside the level
+    if (Math.round(entityList[player.id].position.z / options.generation.blocksize) >= classifyLayers().collision.min &&
+		Math.round(entityList[player.id].position.z / options.generation.blocksize) <= classifyLayers().collision.max){ // TODO: make out of bounds detection work
+            // cycle thtrough all layers
+			var layerinfo = classifyLayers();
+            for (var k = 0; k < layerinfo.collision.layers.length; k++) {
+				if(level[currentLevel].layers[layerinfo.collision.layers[k]].properties.collision == Math.round(entityList[player.id].position.z / options.generation.blocksize)){
+					if (collision.inside == 0) {
+						collision.inside = level[currentLevel].layers[layerinfo.collision.layers[k]].data[collision.position.round.x(0) + collision.position.round.y(0) * level[currentLevel].width];
+					}
+					if (collision.left == 0) {
+						collision.left = level[currentLevel].layers[layerinfo.collision.layers[k]].data[collision.position.floor.x(0) + collision.position.round.y(0) * level[currentLevel].width];
+					}
+					if (collision.right == 0) {
+						collision.right = level[currentLevel].layers[layerinfo.collision.layers[k]].data[collision.position.floor.x(0) +1 + collision.position.round.y(0) * level[currentLevel].width];
+					}
+					if (collision.top == 0) {
+						collision.top = level[currentLevel].layers[layerinfo.collision.layers[k]].data[collision.position.round.x(0) + collision.position.floor.y(0) * level[currentLevel].width];
+					}
+					if (collision.bottom == 0) {
+						collision.bottom = level[currentLevel].layers[layerinfo.collision.layers[k]].data[collision.position.round.x(0) + (collision.position.floor.y(0) +1)*level[currentLevel].width];
+					}
+					if (collision.behind == 0 && typeof layerinfo.collision.layers[k-1] != "undefined" &&
+					(entityList[player.id].position.z / options.generation.blocksize+0.5 - Math.round(entityList[player.id].position.z / options.generation.blocksize)) <= options.collision.frontBackErrorMargin) {
+						collision.behind = level[currentLevel].layers[layerinfo.collision.layers[k-1]].data[collision.position.round.x(0) + collision.position.round.y(0) * level[currentLevel].width];
+					}
+					if (collision.front == 0 && typeof layerinfo.collision.layers[k+1] != "undefined" &&
+						(entityList[player.id].position.z / options.generation.blocksize+0.5 - Math.round(entityList[player.id].position.z / options.generation.blocksize)) >= 1-options.collision.frontBackErrorMargin) {
+						collision.front = level[currentLevel].layers[layerinfo.collision.layers[k+1]].data[collision.position.round.x(0) + collision.position.round.y(0) * level[currentLevel].width];
+					}
                     if (typeof liquidLayers != "undefined"){
                         if (liquidLayers.length == 0)
                             collision.liquid = 0;
                         else
                         for (var p = 0; p < liquidLayers.length; p++) {
-                            if (level[currentLevel].layers[liquidLayers[p]].data[Math.round(entity_position.x / blockSize) + -1 *Math.round((entity_position.y - 6) / blockSize)*level[currentLevel].width] != 0)
+                            if (level[currentLevel].layers[liquidLayers[p]].data[Math.round(entity_position.x / options.generation.blocksize) + -1 *Math.round((entity_position.y - 6) / options.generation.blocksize)*level[currentLevel].width] != 0)
                                 collision.liquid = parseFloat(level[currentLevel].layers[liquidLayers[p]].properties.liquid);
                             else
                                 collision.liquid = 0;
@@ -76,24 +110,29 @@ function e2mCollision(entity_position) {
                     }else {
                         collision.liquid = 0;
                     }
-                    // if(collision.leftType != 0 &&
-                    //     entity.position.x >= (Math.round(entity.position.x / blockSize)-1)*blockSize &&
-                    //     entity.position.x <= (Math.round(entity.position.x / blockSize))*blockSize)
-                    //     collision.left = true;
-                    // if(collision.rightType != 0 &&
-                    //     entity.position.x >= (Math.round(entity.position.x / blockSize))*blockSize &&
-                    //     entity.position.x <= (Math.round(entity.position.x / blockSize)+1)*blockSize)
-                    //     collision.right = true;
-                    // if(collision.topType != 0 &&
-                    //     entity.position.y >= (Math.round(entity.position.y / blockSize)-1)*blockSize &&
-                    //     entity.position.y <= (Math.round(entity.position.y / blockSize))*blockSize)
-                    //     collision.top = true;
-                    // if(collision.bottomType != 0 &&
-                    //     entity.position.y >= (Math.round(entity.position.y / blockSize))*blockSize&&
-                    //     entity.position.y <= (Math.round(entity.position.y / blockSize)+1)*blockSize)
-                    //     collision.bottom = true;
                 }
 
+            }
+            if (level[currentLevel].width * level[currentLevel].tilewidth - entity_position.x * 2 < level[currentLevel].tilewidth) {
+                collision.right = 0;
+            }
+            if (level[currentLevel].height * level[currentLevel].tileheight - entity_position.y * 2 < level[currentLevel].tileheight) {
+                collision.bottom = 0;
+            }
+    }else{
+        // entity is out of bounds
+        collision.top = 0;
+        collision.bottom = 0;
+        collision.left = 0;
+        collision.right = 0;
+        collision.inside = 0;
+		collision.behind = 0;
+		collision.front = 0;
+        collision.liquid = 0;
+        collision.outOfBounds = true;
+    }
+    if (typeof collision.bottom == "undefined") {
+        collision.bottom = 0;
     }
     return collision;
 }
@@ -114,7 +153,11 @@ function updateBulletCollision() {
             if (e2eCollision(localBullets[i].mesh, minifiedEntityList[prop].mesh)) {
                 if (localBullets[i].props.collision.counter >= 0){
                     localBullets[i].props.collision.counter--;
-                    socket.emit("weaponDamage", {"damage": localBullets[i].props.damage, "victim": prop} );
+                    angle = new Object();
+                    console.log(localBullets[i].mesh.rotation.z);
+                    angle.x = -1 * Math.cos(localBullets[i].mesh.rotation.z);//minifiedEntityList[prop].mesh.position.y - localBullets[i].mesh.position.y;
+                    angle.y = -1 * Math.sin(localBullets[i].mesh.rotation.z);//minifiedEntityList[prop].mesh.position.x - localBullets[i].mesh.position.x;
+                    socket.emit("weaponDamage", {"damage": localBullets[i].props.damage, "victim": prop, "attacker": ownNetworkID, "angle" : angle, "speed": localBullets[i].props.speed } );
                 }
             }
         }
@@ -132,6 +175,13 @@ function runFriction(entity, friction, airResistance, minimalVelocity, terminalV
     }
     if ( Math.abs(entity.velocity.x) >= terminalVelocity ) {
         entity.velocity.x = Math.sign(entity.velocity.x) * terminalVelocity;
+    }
+	entity.velocity.z = entity.velocity.z * friction;
+    if ( Math.abs(entity.velocity.z) <= minimalVelocity ){
+        entity.velocity.z = 0;
+    }
+    if ( Math.abs(entity.velocity.z) >= terminalVelocity ) {
+        entity.velocity.z = Math.sign(entity.velocity.z) * terminalVelocity;
     }
     // friction * entity.collision.liquid;
     // if (entity.collision.bottom == 0) {
@@ -151,9 +201,13 @@ function runFriction(entity, friction, airResistance, minimalVelocity, terminalV
 }
 
 function gravity(entity, downForce, terminalVelocity) {
-    if(entity.collision.bottom != 0)
-        entity.velocity.y = 0;
-    else {
+    if(entity.collision.bottom != 0 && entity.velocity.y > 0) {
+        if (entity.velocity.y < 1) {
+            entity.collision.bounce = 0;
+        }
+        entity.velocity.y = entity.velocity.y * -1 * entity.collision.bounce;
+    }
+    else if(entity.collision.bottom == 0) {
         if(entity.velocity.y < terminalVelocity * (1-entity.collision.liquid))
             entity.velocity.y += downForce * (1-entity.collision.liquid);
         else{
@@ -174,11 +228,11 @@ function collisionStop(entity) {
         entity.velocity.y = 0;
         entity.moveDown(1);
     }
-    if (entity.collision.left != 0){
+    if (entity.collision.left != 0 && entity.velocity.x < 0){
         entity.velocity.x = 0;
         // entity.moveRight(1, true);
     }
-    if (entity.collision.right != 0){
+    if (entity.collision.right != 0 && entity.velocity.x > 0){
         entity.velocity.x = 0;
         // entity.moveRight(-1, true);
     }
@@ -187,12 +241,12 @@ function collisionStop(entity) {
 }
 
 function debugCollision(entity){
-    var geometry = new THREE.BoxGeometry( blockSize, blockSize, blockSize );
+    var geometry = new THREE.BoxGeometry( options.generation.blocksize, options.generation.blocksize, options.generation.blocksize );
     var material = new THREE.MeshBasicMaterial( { color: 0x4f304f} );
     entity.debugCubeTop = new THREE.Mesh( geometry, material );
     scene.add( entity.debugCubeTop );
 }
 
 function updateDebugCollsion(entity){
-    entity.debugCubeTop.position.set(Math.floor((entity.position.x + blockSize / 2) / blockSize) * blockSize, Math.round((entity.position.y + blockSize) / blockSize) * blockSize, entity.position.z);
+    entity.debugCubeTop.position.set(Math.floor((entity.position.x + options.generation.blocksize / 2) / options.generation.blocksize) * options.generation.blocksize, Math.round((entity.position.y + options.generation.blocksize) / options.generation.blocksize) * options.generation.blocksize, entity.position.z);
 }

@@ -5,12 +5,13 @@ function PlayerHUD(props) {
         props = new Object();
     this.align = props.align || "center";
     this.textColor = props.textColor || "#e8e8e8";
+    this.scoreColor = props.scoreColor || "#d8d888";
     this.objColor = props.objColor || "#bbb";
     this.objbgColor = props.objbgColor || "#000";
     this.healthColor = props.healthColor || "#890000";
     this.usedHealthColor = props.usedHealthColor || "#d80000";
     this.healthBorder = props.healthBorder || "#e8e8e8";
-    this.font = props.font || "40px DejaVu Sans Mono";
+    this.font = props.font || "40px PressStart2p";
     this.healthBar = {
         x: 110,
         y: 96 - 40,
@@ -44,17 +45,12 @@ function PlayerHUD(props) {
     this.ctx = this.elem.getContext('2d')
     this.ctx.webkitImageSmoothingEnabled = false;
     this.ctx.mozImageSmoothingEnabled = false;
-    this.ctx.imageSmoothingEnabled = false; 
-
-    // this.ctx.fillStyle = this.textColor;
-    // this.ctx.textBaseline = "top";
-    // this.ctx.font = this.font;
-    // this.ctx.fillText("Life",0,100);
+    this.ctx.imageSmoothingEnabled = false;
 
     parent = this;
 
     function phUpdate(){
-        parent.ctx.clearRect(0, 0, parent.elem.style.width, parent.elem.style.height);
+        parent.ctx.clearRect(0, 0, parent.elem.width, parent.elem.height);
         parent.ctx.fillStyle = parent.objColor;
         parent.ctx.fillRect(0, 0, 96, 96);
         parent.ctx.fillStyle = parent.objbgColor;
@@ -82,6 +78,15 @@ function PlayerHUD(props) {
                 parent.ctx.drawImage(parent.thumbnail, 5, 5, 86, 86);
             }
         }
+
+        parent.ctx.textBaseline = "top";
+        parent.ctx.font = parent.font;
+        parent.ctx.textAlign="left";
+        parent.ctx.fillStyle = parent.textColor;
+        parent.ctx.fillText( entityList[player.id].ammo.toString().slice(-2) + "/" + entityList[player.id].maxAmmo.toString().slice(-2), parent.healthBar.x,10);
+        parent.ctx.textAlign="right";
+        parent.ctx.fillStyle = parent.scoreColor;
+        parent.ctx.fillText( entityList[player.id].score, parent.elem.width - 40,10);
 
         requestAnimationFrame( phUpdate );
     }

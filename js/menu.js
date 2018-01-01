@@ -32,7 +32,7 @@ function refreshLvlSel(folder) {
         console.log(folderContent);
         document.getElementById("levelList").innerHTML = "";
         for (var i = 0; i < folderContent.length; i++) {
-            if (!~folderContent[i].indexOf(".tmx"))
+            if (~folderContent[i].indexOf(".json"))
                 document.getElementById("levelList").innerHTML += "<div class='category' onclick='document.getElementById(&quot;levelName&quot;).value = &quot;" + folderContent[i] + "&quot;'>" +  folderContent[i] + "</div>";
         }
     });
@@ -101,17 +101,8 @@ function shadowsOnOff() {
 }
 
 function entityShadowsOnOff() {
-    if (entityShadows) {
-        entityShadows = false;
-        document.getElementById("entityShadowsOnOffBtn").innerHTML = "OFF";
-    }else {
-        entityShadows = true;
-        document.getElementById("entityShadowsOnOffBtn").innerHTML = "ON";
-    }
-}
-
-function changeShadowQuality(val) {
-    shadowQuality = Math.pow(2, val);
+    options.generation.entityShadows = !options.generation.entityShadows;
+    document.getElementById("entityShadowsOnOffBtn").innerHTML = options.generation.entityShadows;
 }
 
 // used to assign a color to each user id

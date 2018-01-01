@@ -20,7 +20,7 @@ function spawnBullet(owner, props){
 
 	var tempX = math.eval( localBullets[localBullets.length-1].props.trajectory.x.replace(/\$/g, localBullets[localBullets.length-1].timer) );
 	var tempY = math.eval( localBullets[localBullets.length-1].props.trajectory.y.replace(/\$/g, localBullets[localBullets.length-1].timer) );
-	entityList[player.id].velocity.y -= -1 * tempX * Math.cos(localBullets[localBullets.length-1].props.rotation) - tempY * Math.sin(localBullets[localBullets.length-1].props.rotation) * props.knockback;
+	entityList[player.id].velocity.y -= tempX * Math.cos(localBullets[localBullets.length-1].props.rotation) - tempY * Math.sin(localBullets[localBullets.length-1].props.rotation) * props.knockback;
 	entityList[player.id].velocity.x -= -1 * tempX * Math.sin(localBullets[localBullets.length-1].props.rotation) + tempY * Math.cos(localBullets[localBullets.length-1].props.rotation) * props.knockback;
 }
 

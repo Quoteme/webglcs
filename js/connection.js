@@ -4,7 +4,7 @@ ssBullets = new Object(); // serverside bullets
 ownNetworkID = undefined;
 
 setInterval(function () {
-    if (typeof(player) == "object" && multiplayer) {
+    if (typeof(player) == "object" && options.multiplayer.singleplayer) {
         socket.emit("entity update", {"minifiedEntityData": miniEntityData(entityList[player.id]), "mlb": minifiedLocalBullets(localBullets)} );
     }
 }, updateTimer);
@@ -78,7 +78,18 @@ socket.on('receiveEntity', function(data){
 
 socket.on('damageReceived', function(data){
     if (data.victim == ownNetworkID) {
-        entityList[player.id].health -= data.damage;
+        if (entityList[player.id].friendlyFire == true) {
+            entityList[player.id].health -= data.damage;
+            entityList[player.id].lastHit = data.attacker;
+            entityList[player.id].velocity.x = -1 * data.angle.x * data.speed * entityList[player.id].knockbackResistance;
+            entityList[player.id].velocity.y = -1 * data.angle.y * data.speed * entityList[player.id].knockbackResistance;
+        }
+    }
+});
+
+socket.on('increaseScore', function(data){
+    if (data.entity == ownNetworkID) {
+        entityList[player.id].score += data.val;
     }
 });
 
@@ -118,8 +129,8 @@ socket.on('disconnected', function(id){
 // });
 
 function disableMultiplayer() {
-    window.multiplayer = false;
-    console.log(multiplayer);
+    options.multiplayer.singleplayer = false;
+    console.log(options.multiplayer.singleplayer);
     for (var i = 0; i < allClients.length; i++) {
         if (typeof sse[allClients[i]] != undefined)
             removeMinifiedEntity( sse[allClients[i]] );
@@ -128,7 +139,7 @@ function disableMultiplayer() {
 }
 
 function enableMultiplayer() {
-    window.multiplayer = true;
+    options.multiplayer.singleplayer = true;
 }
 
 Element.prototype.remove = function() {
