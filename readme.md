@@ -1,7 +1,8 @@
-#WEBGLCS
-#####Webgl Cave Story
+# WEBGLCS
+##### Webgl Cave Story
 
-<video preload="auto" autoplay="autoplay" muted="muted" loop="loop" webkit-playsinline="" style="width: 728px; height: 558.198px;"><source src="//i.imgur.com/Yjr58ue.mp4" type="video/mp4"></video>
+[example](https://imgur.com/Yjr58ue)
+![example](http://andwhyisit.bugsiteguardian.com/cstsf/archive1/p358227-5-ac0zjxj.png)
 
 This project aimed to "emulate" cave story in a 3D environment, but over time drifted more and more away from it.
 Now it is more of a general purpose engine for any 3D tiled platforming game, with all the things you need like:
