@@ -3,77 +3,19 @@ var keyboard = new THREEx.KeyboardState();
 function controle(entity){
     // movement
     if(keyboard.pressed("space")){
-        entity.velocity.y -= 0.04;
+        entity.jump();
     }
-    if(keyboard.pressed("space") && entity.collision.bottom != 0){
-        entity.velocity.y = -2 * (1-entity.collision.liquid);
-    }
-	function walkLeft() {
-		if (!entity.collision.left) {
-			if (entity.collision.bottom != 0) {
-				entity.velocity.x -= entity.speedOnFoot;
-			}else {
-				entity.velocity.x -= entity.speedInAir;
-			}
-		}
-	}
-	function walkRight() {
-		if (!entity.collision.right) {
-			if (entity.collision.bottom != 0) {
-				entity.velocity.x += entity.speedOnFoot;
-			}else {
-				entity.velocity.x += entity.speedInAir;
-			}
-		}
-	}
-	function walkBack() {
-		if (!entity.collision.behind) {
-			if (entity.collision.bottom != 0) {
-				entity.velocity.z += entity.speedOnFoot;
-			}else {
-				entity.velocity.z += entity.speedInAir;
-			}
-		}
-	}
-	function walkFront() {
-		if (!entity.collision.front) {
-			if (entity.collision.bottom != 0) {
-				entity.velocity.z -= entity.speedOnFoot;
-			}else {
-				entity.velocity.z -= entity.speedInAir;
-			}
-		}
-	}
-    if(keyboard.pressed("A")){
-		if (options.camera.zoom >= 0) {
-			walkLeft();
-		}else {
-			walkRight();
-		}
+	if(keyboard.pressed("A")){
+		entity.walkLeft();
     }
     if(keyboard.pressed("D")){
-		if (options.camera.zoom >= 0) {
-			walkRight();
-		}else {
-			walkLeft();
-		}
+		entity.walkRight();
 	}
 	if(keyboard.pressed("W")){
-		if (options.camera.zoom >= 0) {
-			walkBack();
-		}else {
-			walkFront();
-		}
+		entity.walkBack();
     }
 	if(keyboard.pressed("S")){
-		if (options.camera.zoom >= 0) {
-			walkFront();
-		}else {
-			walkBack();
-		}
-    }
-    if(keyboard.pressed("shift")){
-
+		entity.walkFront();
     }
 
     // animation

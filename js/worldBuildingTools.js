@@ -159,8 +159,16 @@ function buildBricks() {
 			this.texture.wrapT = THREE.RepeatWrapping;
 			this.texture.wrapS = THREE.RepeatWrapping;
 			this.material = new THREE.MeshBasicMaterial({map: this.texture, transparent: true});
-			this.mesh = new THREE.Mesh( new THREE.PlaneGeometry( nextPowerOf2(options.generation.blocksize*level[currentLevel].width), nextPowerOf2(options.generation.blocksize*level[currentLevel].height), level[currentLevel].width, level[currentLevel].height), this.material );
-			this.mesh.position.set(this.canvas.width / 2 - options.generation.blocksize / 2,-this.canvas.height / 2 + options.generation.blocksize / 2, options.generation.blocksize / 2);
+			this.mesh = new THREE.Mesh( new THREE.PlaneGeometry(
+                nextPowerOf2(options.generation.blocksize*level[currentLevel].width),
+                nextPowerOf2(options.generation.blocksize*level[currentLevel].height),
+                level[currentLevel].width, level[currentLevel].height), this.material
+            );
+			this.mesh.position.set(
+                this.canvas.width / 2 - options.generation.blocksize / 2,
+                -this.canvas.height / 2 + options.generation.blocksize / 2,
+                options.generation.blocksize / 2
+            );
 			scene.add( this.mesh );
 			function nextPowerOf2(n) {
 				return nearestPowerOf2(n) * 2;
@@ -200,7 +208,9 @@ function buildBricks() {
 
 		                    // iterate from left to right, then top to bottom
 		                    // only render a block, if it has a value other than 0 or null.
-		                    if (level[currentLevel].layers[k].data[i + j*level[currentLevel].width] != 0 && level[currentLevel].layers[k].data[i + j*level[currentLevel].width] != undefined && isNaN(level[currentLevel].layers[k].data[i + j*level[currentLevel].width]) == false){
+		                    if (level[currentLevel].layers[k].data[i + j*level[currentLevel].width] != 0 &&
+                                level[currentLevel].layers[k].data[i + j*level[currentLevel].width] != undefined &&
+                                isNaN(level[currentLevel].layers[k].data[i + j*level[currentLevel].width]) == false){
 		                        // This detects weather the block should be a flat plane or not
 		                        // It needs to be written like this otherwise there would be errors
 		                        var geometry = new THREE.CubeGeometry(options.generation.blocksize + options.generation.blocksize * blockVerticalTester(currentLevel, k, i, j),options.generation.blocksize,options.generation.blocksize /*, blockVerticalTester(currentLevel, k, i, j) + 1 */);
@@ -219,7 +229,8 @@ function buildBricks() {
 		                            alphaTestValue = 0.5;
 		                            if (typeof textureFix != "undefined"){
 		                                if (typeof textureFix.spriteFix[ level[currentLevel].layers[k].data[i + j*level[currentLevel].width] ] != "undefined"){
-		                                    // console.log("test");
+		                                    console.log("----- test -----");
+                                            console.log(tileTexture[0][textureFix.spriteFix[ level[currentLevel].layers[k].data[i + j*level[currentLevel].width] ].right - 1]);
 		                                    temp = {
 		                                        right : _.cloneDeep(tileTexture[0][textureFix.spriteFix[ level[currentLevel].layers[k].data[i + j*level[currentLevel].width] ].right - 1]),
 		                                        left : _.cloneDeep(tileTexture[0][textureFix.spriteFix[ level[currentLevel].layers[k].data[i + j*level[currentLevel].width] ].left - 1]),
@@ -239,8 +250,8 @@ function buildBricks() {
 		                                        new THREE.MeshLambertMaterial( { color: 0xffffff, map: temp.left , transparent: true, alphaTest: alphaTestValue} ), // left
 		                                        new THREE.MeshLambertMaterial( { color: 0xffffff, map: temp.top , transparent: true, alphaTest: alphaTestValue} ), // top
 		                                        new THREE.MeshLambertMaterial( { color: 0xffffff, map: temp.bottom , transparent: true, alphaTest: alphaTestValue} ), // bottom
-		                                        new THREE.MeshLambertMaterial( { color: 0xffffff, map: temp.back , transparent: true, alphaTest: alphaTestValue} ), // back
-		                                        new THREE.MeshLambertMaterial( { color: 0xffffff, map: temp.front , transparent: true, alphaTest: alphaTestValue} )  // front
+		                                        new THREE.MeshLambertMaterial( { color: 0xffffff, map: temp.front , transparent: true, alphaTest: alphaTestValue} ), // back
+		                                        new THREE.MeshLambertMaterial( { color: 0xffffff, map: temp.back , transparent: true, alphaTest: alphaTestValue} )  // front
 		                                    ]);
 		                                    // var material = new THREE.MeshLambertMaterial( { color: 0xffffff, map: tempTexture[textureCount] , transparent: true, alphaTest: alphaTestValue} );
 		                                }
@@ -316,7 +327,7 @@ function buildBricks() {
                 if (typeof level[currentLevel].layers[k].properties.entityLayer !== "undefined"){
                     for (var i = 0; i < level[currentLevel].layers[k].objects.length; i++) {
                         objNames[level[currentLevel].layers[k].objects[i].name] = new EntityID();
-                        if (level[currentLevel].layers[k].objects[i].type == "player"){
+                        if (level[currentLevel].layers[k].objects[i].visible){
                             // quote = player = new EntityID();
                             // entityList[player.id] = new Entity(player.id, options.generation.blocksize*level[currentLevel].width * 0.5, -options.generation.blocksize*level[currentLevel].height *0.5, options.generation.blocksize * 2, options.generation.blocksize, options.generation.blocksize, "img/chars/player.png")
                             // displayEntity(entityList[player.id], true);
@@ -336,9 +347,15 @@ function buildBricks() {
 									"height": options.generation.blocksize
 								},
 								"imgURL": level[currentLevel].layers[k].objects[i].properties.img,
-								"health": 3});
+								"health": 3,
+                                "type": level[currentLevel].layers[k].objects[i].type,
+                                "aiGroup": level[currentLevel].layers[k].objects[i].properties.aiGroup
+                            },function (e) {
+                                displayEntity( entityList[e.id],true);
+                            });
                             camera.position.z = camera.position.z + options.generation.blocksize * ( level[currentLevel].layers[k].properties.z - 3);
-                            displayEntity( entityList[ objNames[level[currentLevel].layers[k].objects[i].name].id ] , true);
+                            // console.log(entityList[ objNames[level[currentLevel].layers[k].objects[i].name].id ]);
+                            // displayEntity( entityList[ objNames[level[currentLevel].layers[k].objects[i].name].id ] , true);
 
                             // entityList[objNames[level[currentLevel].layers[k].objects[i].name].id] = new Entity(objNames[level[currentLevel].layers[k].objects[i].name].id, level[currentLevel].layers[k].objects[i].x, -level[currentLevel].layers[k].objects[i].y, options.generation.blocksize * 2, options.generation.blocksize, options.generation.blocksize, level[currentLevel].layers[k].objects[i].properties.img)
                         }
@@ -368,7 +385,7 @@ function buildBricks() {
         }
     }
 
-    newLevel = false;
+    newLevel = "false";
 }
 
 function classifyTiles() {

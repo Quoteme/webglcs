@@ -1,0 +1,17 @@
+{
+    "imageSize" : {
+        "x" : 32,
+        "y" : 16
+    },
+	"size":{
+		"x": 16,
+		"y": 8
+	},
+    "animationDuration" : 100,
+    "usedAnimation" : "stand",
+    "animation" : {
+        "stand" : [2,2,3],
+        "run" : [1,2],
+        "attack" : [4,4,4,5]
+    }
+}

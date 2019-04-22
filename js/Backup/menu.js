@@ -36,7 +36,6 @@ function weaponThumbsReload(folder) {
         imgs = new Array();
         for (var i = 0; i < folderContent.length; i++) {
             if (~folderContent[i].indexOf(".json")){
-                console.log(folderContent[i]);
 
                 function loadJSON(callback) {
                     var xobj = new XMLHttpRequest();
@@ -44,7 +43,6 @@ function weaponThumbsReload(folder) {
                     xobj.open('GET', folderContent[i], true); // Replace 'my_data' with the path to your file
                     xobj.onreadystatechange = function () {
                           if (xobj.readyState == 4 && xobj.status == "200") {
-                              console.log("loaded");
                             // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
                             obj = JSON.parse(xobj.responseText);
                             callback(obj.thumbnail);

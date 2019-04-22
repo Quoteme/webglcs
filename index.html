@@ -57,7 +57,7 @@
 				<div class="category">bump mapping</div>
 			</div>
 			<div class="subMenu layer3" id="levels">
-				<div class="category" onclick="changeLevel(getElementById('levelName').value, getElementById('memorySpace').value)">change Level</div>
+				<div class="category" onclick="document.cookie=getElementById('levelName').value; changeLevel(getElementById('levelName').value, getElementById('memorySpace').value)">change Level</div>
 				<div class="category" onclick="refreshLvlSel(document.getElementById('levelURL').value); showMenuPart(4, 'levelList')">show levels for: <input type="text" name="name" value="levels/" id="levelURL"></div>
 				<div class="category">level name: <input type="text" name="name" value="levels/start.json" id="levelName"></div>
 				<div class="category">memory space: <input type="number" name="name" value="0" id="memorySpace"></div>
@@ -274,10 +274,12 @@
 		<script src="js/JSONlevelLoader.js" charset="utf-8"></script>
 		<script src="js/levelUnloader.js" charset="utf-8"></script>
 		<script src="js/controles.js" charset="utf-8"></script>
+		<script src="js/gamepad.js" charset="utf-8"></script>
 		<script src="js/worldBuildingTools.js" charset="utf-8"></script>
 		<script src="js/collision.js" charset="utf-8"></script>
 		<script src="js/CombinedCamera.js" charset="utf-8"></script>
 		<script src="js/hud.js" charset="utf-8"></script>
+		<script src="js/ai.js" charset="utf-8"></script>
         <script src="js/main.js" charset="utf-8"></script>
 	</body>
 </html>

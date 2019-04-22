@@ -37,7 +37,7 @@ options = {
 		"zoom": 100
 	},
 	"collision":{
-		"frontBackErrorMargin": 0.1
+		"frontBackErrorMargin": 3
 	},
 	"generation":{
 		"worldBuilder": "classic",
@@ -53,7 +53,7 @@ options = {
 	}
 }
 
-newLevel = true; // true, false, "loading"
+newLevel = "true"; // "true", "false", "loading"
 currentLevel = 0;
 newLevelReloadBuffer = newLevelReloadTimer =  100; // this buffer counts down if the level is not loaded, and will try to reload the level after run down
 loadingCounter = 0; // counts how long the game has been loaing
@@ -72,16 +72,20 @@ function init() {
     loadingCube = new THREE.Mesh( geometry, material );
     scene.add( loadingCube );
 
+	if (document.cookie!="") {
+		document.getElementById("levelName").value = document.cookie.replace(/"/g, '');
+	}
+
     camera.position.z = 150;
 }
 
 function animate() {
     function update() {
         // ------------- LOADED -------------
-        if(!newLevel){
+        if(newLevel == "false"){
             // collision update
             for (var i = 0; i < allCurrentEntities.length; i++) {
-                entityList[allCurrentEntities[i]].collision = e2mCollision(entityList[allCurrentEntities[i]].position);
+                entityList[allCurrentEntities[i]].collision = e2mCollision(entityList[allCurrentEntities[i]].position,entityList[allCurrentEntities[i]].size);
             }
             // player movement
             for (var i = 0; i < allCurrentEntities.length; i++) {
@@ -91,13 +95,20 @@ function animate() {
                     gravity(entityList[allCurrentEntities[i]], entityList[allCurrentEntities[i]].fallSpeed, 2);
                 collisionStop(entityList[allCurrentEntities[i]]);
             }
+			// npc movement
+			allCurrentEntities
+				.map(i=>entityList[i])
+				.filter(e=>e.aiGroup!="")
+				.forEach(e=>aiPatterns[e.aiGroup]([e]));
             // update Bullets
             updateBullets();
             updateBulletCollision();
 
             // only allow the movement if the player does not have the menu open
-            if (!menuShown)
+            if (!menuShown){
                 controle(entityList[player.id]);
+				gamepadUpdate([entityList[player.id]]);
+			}
 
 			if (options.camera.focusEntity.use) {
 	            focusEntity(entityList[options.camera.focusEntity.entity], {"x":Math.abs(camera.position.x - entityList[player.id].position.x) * 0.05, "y":Math.abs(camera.position.y - entityList[player.id].position.y) * 0.05}, true);
@@ -111,7 +122,7 @@ function animate() {
         }
         // ------------- NOT LOADED -------------
         else{
-            if (newLevel == true)
+            if (newLevel == "true")
                 loadTextures();
             if (newLevel == "loading"){
                 console.log("loading buffer fills");
@@ -150,7 +161,7 @@ function animate() {
             loadScreen();
         }
 
-		if (worldBuilder == "advanced" && newLevel == false) {
+		if (worldBuilder == "advanced" && newLevel == "false") {
 			for (var v in canvasLayer) {
 				if (canvasLayer.hasOwnProperty(v)) {
 					for (var i = 0; i < canvasLayer[v].length; i++) {

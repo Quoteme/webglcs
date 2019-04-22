@@ -3,6 +3,10 @@
         "x" : 32,
         "y" : 32
     },
+    "size":{
+		"x": 16,
+		"y": 16
+	},
     "animationDuration" : 15,
     "usedAnimation" : "stand",
     "animation" : {

@@ -25,8 +25,8 @@ function PlayerHUD(props) {
         this.entityID = "missingID";
     this.elem = document.createElement("canvas");
     this.elem.style.position = "absolute";
-    this.elem.style.left = props.posX || 50;
-    this.elem.style.top = props.posY || 50;
+    this.elem.style.left = props.posX || 20;
+    this.elem.style.top = props.posY || 20;
     this.elem.setAttribute("class", "HUD");
     this.elem.width = props.width || 400;
     this.elem.height = props.height || 200;

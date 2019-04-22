@@ -34,6 +34,33 @@ function loadLevel(url, levelname) {
 
         }
 
+		//TODO: make this work for tiled versions above 1.0.3
+		// make the properties section of all json files backwards compatible by converting them to the old json format
+		for (var i=0; i<level[levelname].layers.length;i++){
+			if(level[levelname].layers[i].properties!=undefined){
+				convertPropertiesToOldFormat(level[levelname].layers[i]);
+			}
+            if(level[levelname].layers[i].objects!=undefined){
+                for (var j = 0; j < level[levelname].layers[i].objects.length; j++) {
+                    if (level[levelname].layers[i].objects[j].properties!=undefined) {
+                        convertPropertiesToOldFormat(level[levelname].layers[i].objects[j]);
+                    }
+                }
+            }
+		}
+        function convertPropertiesToOldFormat(pNewformat){
+            var tempT={};
+            var tempP={};
+            for (var i = 0; i < pNewformat.properties.length; i++) {
+                tempP[pNewformat.properties[i].name]=pNewformat.properties[i].value;
+                tempT[pNewformat.properties[i].name]=pNewformat.properties[i].type;
+            }
+            if (Object.keys(tempP).length>0) {
+                pNewformat.properties = tempP;
+                pNewformat.propertytypes = tempT;
+            }
+        }
+
         level[levelname].loaded = true;
         level[levelname].url = url;
     });

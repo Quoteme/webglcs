@@ -7,7 +7,7 @@ entityIdSpace = Math.pow(10, 8);
 function EntityID(id) {
     this.id = id || Math.round(Math.random()*entityIdSpace);
 }
-function Entity(props){
+function Entity(props,callback){
 	// props: id, position[x, y, z], size[width, height], imgURL, health
     if (props.imgURL == "player_image")
         props.imgURL = document.getElementById("playerImageLocation").value;
@@ -22,6 +22,7 @@ function Entity(props){
     this.img.src = props.imgURL;
 
     this.visible = true;
+    this.gravity = true;
     this.opacity = 1;
     this.direction = true; // true = left | false = right
     this.maxHealth = props.health || 3;
@@ -33,6 +34,7 @@ function Entity(props){
     this.weapon = "";
     this.knockbackResistance = 0;
     this.friendlyFire = false;
+    this.type = props.type || "npc";
 
     this.mesh = null; // will get a value durning displayEntity(...);
 
@@ -50,9 +52,12 @@ function Entity(props){
     this.maxAmmo = 0;
     this.rounds = 0;
     this.reloadTimer = 0;
+    //
+    this.aiGroup = props.aiGroup || "";
 
     var parent = this;
 
+    // weapon stuff
     this.loadWeapon = function (url) {
         function loaderFunction(callback) {
             var xobj = new XMLHttpRequest();
@@ -73,28 +78,27 @@ function Entity(props){
             parent.weapon = actual_JSON;
         });
     }
-    this.removeWeapon = function () {
-        parent.weapon = "";
-    }
-    this.shootWeapon = function () {
-        if (parent.reloadTimer <= 0 && typeof parent.weapon == "object") {
-            parent.reloadTimer = parent.weapon.knockbackTime;
-            for (var i = 0; i < parent.weapon.trajectory.length; i++) {
-                spawnBullet(parent.id, {"origin": _.cloneDeep(parent.position),
-                    "speed": parent.weapon.speed, "up": 0, "right": 1,
-                    "decay": parent.weapon.decay, "weight": parent.weapon.weight,
-                    "animation": parent.weapon.animation, "trajectory": parent.weapon.trajectory[i],
-                    "bullet" : parent.weapon.bullet, "knockback" : parent.weapon.knockback,
-                    "collision" : _.cloneDeep(parent.weapon.collision), "damage" : parent.weapon.damage});
+    this.removeWeapon = ()=>{this.weapon = ""};
+    this.shootWeapon = ()=> {
+        if (this.reloadTimer <= 0 && typeof this.weapon == "object") {
+            this.reloadTimer = this.weapon.knockbackTime;
+            for (var i = 0; i < this.weapon.trajectory.length; i++) {
+                spawnBullet(this.id, {"origin": _.cloneDeep(this.position),
+                    "speed": this.weapon.speed, "up": 0, "right": 1,
+                    "decay": this.weapon.decay, "weight": this.weapon.weight,
+                    "animation": this.weapon.animation, "trajectory": this.weapon.trajectory[i],
+                    "bullet" : this.weapon.bullet, "knockback" : this.weapon.knockback,
+                    "collision" : _.cloneDeep(this.weapon.collision), "damage" : this.weapon.damage});
             }
         }
     }
 
-    // These functions are mostly for controling the entity yourself using the controles.js
-    // as these are not neccesary for serverside entities
+    // movement / teleportation
     this.moveRight = function(p, noTurn){
         parent.position.x += p;
-        parent.mesh.position.x += p;
+        if (parent.mesh!=undefined) {
+            parent.mesh.position.x += p;
+        }
         if (!noTurn){
             if(p<0)
                 parent.direction = true;
@@ -104,21 +108,23 @@ function Entity(props){
     }
     this.moveDown = function(p){
         for (var i = 0; i < p; i++) {
-            if (e2mCollision({x:parent.position.x, y:parent.position.y - i, z:parent.position.z }).bottom != 0){
+            if (e2mCollision({x:parent.position.x, y:parent.position.y - i, z:parent.position.z }, this.size).bottom != 0){
                 p = i;
                 break;
             }
         }
         parent.position.y -= p;
-        parent.mesh.position.y -= p;
+        if (parent.mesh!=undefined) {
+            parent.mesh.position.y -= p;
+        }
     }
 	this.moveBehind = function(p){
 		// positiv = ↑
 		// negative = ↓
-		console.log(e2mCollision({x:parent.position.x, y:parent.position.y, z:parent.position.z}).front);
+		//console.log(e2mCollision({x:parent.position.x, y:parent.position.y, z:parent.position.z}).front);
 		if (p > 0) {
 			for (var i = 0; i < p; i++) {
-	            if (e2mCollision({x:parent.position.x, y:parent.position.y, z:parent.position.z-i }).behind != 0){
+	            if (e2mCollision({x:parent.position.x, y:parent.position.y, z:parent.position.z-i }, this.size).behind != 0){
 	                p = i;
 	                break;
 	            }
@@ -126,7 +132,7 @@ function Entity(props){
 		}else if (p < 0) {
 			var i = 0;
 			while (i>p) {
-				if (e2mCollision({x:parent.position.x, y:parent.position.y, z:parent.position.z+i }).front != 0){
+				if (e2mCollision({x:parent.position.x, y:parent.position.y, z:parent.position.z+i }, this.size).front != 0){
 					p = i;
 					break
 				}
@@ -134,37 +140,59 @@ function Entity(props){
 			}
 		}
         parent.position.z -= p;
-        parent.mesh.position.z -= p;
+        if (parent.mesh!=undefined) {
+            parent.mesh.position.z -= p;
+        }
     }
-    // use gravity for this entity?
-    this.gravity = true;
 
-    // this variable allows the loadJSON function to use the this object from here
-    parent = this;
-
-    // loads the corrseponding imgURL.json file, that gives crucial info about the image that is being used
-    // like its size, animations and stuff
-    function loadJSON(callback) {
-        var xobj = new XMLHttpRequest();
-            xobj.overrideMimeType("application/json");
-        xobj.open('GET', props.imgURL.replace(/.png|.jpg|.jpeg|.gif/, ".json"), true); // Replace 'my_data' with the path to your file
-        xobj.onreadystatechange = function () {
-              if (xobj.readyState == 4 && xobj.status == "200") {
-                // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
-                callback(xobj.responseText);
-              }
-        };
-        xobj.send(null);
+    // movement / walking
+	this.walkLeft = (p=1)=>{
+		if(!this.collision.left){
+			entity.usedAnimation = "run";
+			if(this.collision.bottom!=0){
+				this.velocity.x -= this.speedOnFoot*p * (options.camera.zoom>=0?1:-1)
+			}else{
+				this.velocity.x -= this.speedInAir*p * (options.camera.zoom>=0?1:-1)
+			}
+		}
+	};
+	this.walkRight = (p=1)=>{
+		if(!this.collision.right){
+			entity.usedAnimation = "run";
+			if(this.collision.bottom!=0){
+				this.velocity.x += this.speedOnFoot*p*(options.camera.zoom>=0?1:-1)
+			}else{
+				this.velocity.x += this.speedInAir*p*(options.camera.zoom>=0?1:-1)
+			}
+		}
+	};
+	this.walkBack = (p=1)=>{
+		if(!this.collision.behind){
+			entity.usedAnimation = "run";
+			if(this.collision.bottom!=0){
+				this.velocity.z += this.speedOnFoot*p*(options.camera.zoom>=0?1:-1)
+			}else{
+				this.velocity.z += this.speedInAir*p*(options.camera.zoom>=0?1:-1)
+			}
+		}
+	};
+	this.walkFront = (p=1)=>{
+		if(!this.collision.front){
+			entity.usedAnimation = "run";
+			if(this.collision.bottom!=0){
+				this.velocity.z -= this.speedOnFoot*p*(options.camera.zoom>=0?1:-1)
+			}else{
+				this.velocity.z -= this.speedInAir*p*(options.camera.zoom>=0?1:-1)
+			}
+		}
+	};
+	this.jump = ()=>{
+        if(this.collision.bottom != 0){
+            this.velocity.y = -2*(1-this.collision.liquid);
+        }else{
+            this.velocity.y -= 0.04;
+        }
     }
-    loadJSON(function(response) {
-        // Parse JSON string into object
-        var actual_JSON = JSON.parse(response);
-        // now join this together with the parent
-        parent = Object.assign(parent, actual_JSON);
-        parent.canvas.width = parent.imageSize.x;
-        parent.canvas.height = parent.imageSize.y;
-
-    });
 
     // TODO: fetch the following information from the img-url.json
     // Frame of the animation that is currently used / is an animation has multiple
@@ -202,6 +230,32 @@ function Entity(props){
     this.canvas.width = this.imageSize.x;
     this.canvas.height = this.imageSize.y;
     this.ctx.drawImage(this.img, 0, 0);
+
+    // loads the corrseponding imgURL.json file, that gives crucial info about the image that is being used
+    // like its size, animations and stuff
+    function loadJSON(callback) {
+        var xobj = new XMLHttpRequest();
+            xobj.overrideMimeType("application/json");
+        xobj.open('GET', props.imgURL.replace(/.png|.jpg|.jpeg|.gif/, ".json"), true); // Replace 'my_data' with the path to your file
+        xobj.onreadystatechange = function () {
+              if (xobj.readyState == 4 && xobj.status == "200") {
+                // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+                callback(xobj.responseText);
+              }
+        };
+        xobj.send(null);
+    }
+    loadJSON(function(response) {
+        // Parse JSON string into object
+        var actual_JSON = JSON.parse(response);
+        // now join this together with the parent
+        parent = Object.assign(parent, actual_JSON);
+        parent.canvas.width = parent.imageSize.x;
+        parent.canvas.height = parent.imageSize.y;
+        parent.size=actual_JSON.size;
+        console.log(parent.size);
+        callback(parent);
+    });
 }
 
 function displayEntity(entityName, autofocus) {
@@ -282,6 +336,9 @@ function moveEntity(entityID) {
 function animateEntities() {
     // goes through all local entities and checks if one of them needs to change its animation / direction
     for (var i = 0; i < allCurrentEntities.length; i++) {
+        if (entityList[allCurrentEntities[i]].mesh==undefined) {
+            continue;
+        }
 
         // change model to the direction the player is facing
         if(entityList[allCurrentEntities[i]].direction)

@@ -22,6 +22,7 @@ canvas{
 
 .HUD{
     z-index: 1;
+    width: 30%;
 }
 
 .menu{
@@ -49,20 +50,25 @@ canvas{
     margin: 10px;
     float: left;
     display: inline;
+    cursor: pointer;
 }
 
 .category{
-    border: 3px solid #AA1111;
-    background-color: #000;
+    overflow: hidden;
+    border-right: 2px solid #e6e6e6;
+    border-left: 2px solid #e6e6e6;
+    background-color: #161616;
     font-size: 18px;
-    padding: 10px;
+    padding: 7px;
     margin: 10px;
-    border-top-right-radius: 30px;
+    opacity: 0.8;
+    cursor: pointer;
     transition: 0.5s;
 }
 
 .category:hover{
     background-color: #333;
+    opacity: 1;
     transition: 0.5s;
 }
 

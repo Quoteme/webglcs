@@ -29,7 +29,7 @@ socket.on('receiveEntity', function(data){
         sse[data.id].id = data.id;
         sse[data.id].bullets = data.ssBullets;
         // if the entity is already preloaded, do the updating and stuff
-        if (!newLevel && typeof minifiedEntityList[data.id] != "undefined") {
+        if (newLevel=="false" && typeof minifiedEntityList[data.id] != "undefined") {
             if (minifiedEntityList[data.id].img.complete && typeof minifiedEntityList[data.id].ctx != "undefined") {
                 if (typeof minifiedEntityList[data.id].mesh == 'undefined') {
                     displayMinifiedEntity(sse[data.id]);

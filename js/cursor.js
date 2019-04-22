@@ -1,7 +1,14 @@
-cursor = new Object();
+cursor = {
+    "x": 0,
+    "y": 0,
+    "down": false,
+    "active" : true
+}
 document.onmousemove = function(e){
-    cursor.x = e.pageX;
-    cursor.y = e.pageY;
+    if (cursor.active) {
+        cursor.x = e.pageX;
+        cursor.y = e.pageY;
+    }
 }
 
 document.onmousedown = function() {

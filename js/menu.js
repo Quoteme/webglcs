@@ -3,7 +3,7 @@ function pauseMenu() {
     if (document.getElementsByClassName("menu")[0].style.marginLeft == "-300%"){
         document.getElementsByClassName("menu")[0].style.marginLeft = "0px";
         menuShown = true;
-        if (typeof newLevel == "undefined" || newLevel) {
+        if (typeof newLevel == "undefined" || newLevel=="true") {
             document.styleSheets[0].cssRules[document.styleSheets[0].cssRules.length - 1].style.filter = "blur(10px)"
         }else {
             document.styleSheets[0].cssRules[document.styleSheets[0].cssRules.length - 1].style.filter = "blur(10px)grayscale()"

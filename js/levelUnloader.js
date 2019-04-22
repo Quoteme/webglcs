@@ -25,7 +25,7 @@ function unloadLevel(LevelName) {
     tileTexture = new Array(0);
 
     level[LevelName] = "";
-    newLevel = true;
+    newLevel = "true";
     camera.position.set(0, 0, 150);
 }
 
