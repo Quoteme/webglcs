@@ -1,0 +1,15 @@
+{
+    "imageSize" : {
+        "x" : 32,
+        "y" : 64
+    },
+	"size":{
+		"x": 24,
+		"y": 48
+	},
+    "animationDuration" : 100,
+    "usedAnimation" : "stand",
+    "animation" : {
+        "stand" : [0,1,2,3]
+    }
+}

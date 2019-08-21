@@ -105,6 +105,7 @@ function JSONBuffer() {
 }
 
 function buildBricks() {
+    loadingCube.visible = false;
     liquidLayers = new Array();
 
     var currentLayer = 0;
@@ -230,7 +231,7 @@ function buildBricks() {
 		                            if (typeof textureFix != "undefined"){
 		                                if (typeof textureFix.spriteFix[ level[currentLevel].layers[k].data[i + j*level[currentLevel].width] ] != "undefined"){
 		                                    console.log("----- test -----");
-                                            console.log(tileTexture[0][textureFix.spriteFix[ level[currentLevel].layers[k].data[i + j*level[currentLevel].width] ].right - 1]);
+                                            console.log(textureFix.spriteFix[ level[currentLevel].layers[k].data[i + j*level[currentLevel].width] ]);
 		                                    temp = {
 		                                        right : _.cloneDeep(tileTexture[0][textureFix.spriteFix[ level[currentLevel].layers[k].data[i + j*level[currentLevel].width] ].right - 1]),
 		                                        left : _.cloneDeep(tileTexture[0][textureFix.spriteFix[ level[currentLevel].layers[k].data[i + j*level[currentLevel].width] ].left - 1]),
@@ -246,20 +247,20 @@ function buildBricks() {
 		                                    temp.back.repeat.set( blockVerticalTester(currentLevel, k, i, j) + 1, 1);
 		                                    temp.front.repeat.set( blockVerticalTester(currentLevel, k, i, j) + 1, 1);
 		                                    var material = new THREE.MultiMaterial([
-		                                        new THREE.MeshLambertMaterial( { color: 0xffffff, map: temp.right , transparent: true, alphaTest: alphaTestValue} ), // right
-		                                        new THREE.MeshLambertMaterial( { color: 0xffffff, map: temp.left , transparent: true, alphaTest: alphaTestValue} ), // left
-		                                        new THREE.MeshLambertMaterial( { color: 0xffffff, map: temp.top , transparent: true, alphaTest: alphaTestValue} ), // top
-		                                        new THREE.MeshLambertMaterial( { color: 0xffffff, map: temp.bottom , transparent: true, alphaTest: alphaTestValue} ), // bottom
-		                                        new THREE.MeshLambertMaterial( { color: 0xffffff, map: temp.front , transparent: true, alphaTest: alphaTestValue} ), // back
-		                                        new THREE.MeshLambertMaterial( { color: 0xffffff, map: temp.back , transparent: true, alphaTest: alphaTestValue} )  // front
+		                                        new THREE.MeshStandardMaterial( {metalness: textureFix.spriteFix[ level[currentLevel].layers[k].data[i + j*level[currentLevel].width] ].metalness, color: 0xffffff, map: temp.right , transparent: true, alphaTest: alphaTestValue} ), // right
+		                                        new THREE.MeshStandardMaterial( {metalness: textureFix.spriteFix[ level[currentLevel].layers[k].data[i + j*level[currentLevel].width] ].metalness, color: 0xffffff, map: temp.left , transparent: true, alphaTest: alphaTestValue} ), // left
+		                                        new THREE.MeshStandardMaterial( {metalness: textureFix.spriteFix[ level[currentLevel].layers[k].data[i + j*level[currentLevel].width] ].metalness, color: 0xffffff, map: temp.top , transparent: true, alphaTest: alphaTestValue} ), // top
+		                                        new THREE.MeshStandardMaterial( {metalness: textureFix.spriteFix[ level[currentLevel].layers[k].data[i + j*level[currentLevel].width] ].metalness, color: 0xffffff, map: temp.bottom , transparent: true, alphaTest: alphaTestValue} ), // bottom
+		                                        new THREE.MeshStandardMaterial( {metalness: textureFix.spriteFix[ level[currentLevel].layers[k].data[i + j*level[currentLevel].width] ].metalness, color: 0xffffff, map: temp.front , transparent: true, alphaTest: alphaTestValue} ), // back
+		                                        new THREE.MeshStandardMaterial( {metalness: textureFix.spriteFix[ level[currentLevel].layers[k].data[i + j*level[currentLevel].width] ].metalness, color: 0xffffff, map: temp.back , transparent: true, alphaTest: alphaTestValue} )  // front
 		                                    ]);
-		                                    // var material = new THREE.MeshLambertMaterial( { color: 0xffffff, map: tempTexture[textureCount] , transparent: true, alphaTest: alphaTestValue} );
+		                                    // var material = new THREE.MeshStandardMaterial( {metalness: 0.05, color: 0xffffff, map: tempTexture[textureCount] , transparent: true, alphaTest: alphaTestValue} );
 		                                }
 		                                else{
-		                                    var material = new THREE.MeshLambertMaterial( { color: 0xffffff, map: tempTexture[textureCount] , transparent: true, alphaTest: alphaTestValue} );
+		                                    var material = new THREE.MeshStandardMaterial( {metalness: 0.05, color: 0xffffff, map: tempTexture[textureCount] , transparent: true, alphaTest: alphaTestValue} );
 		                                }
 		                            }else{
-		                                var material = new THREE.MeshLambertMaterial( { color: 0xffffff, map: tempTexture[textureCount] , transparent: true, alphaTest: alphaTestValue} );
+		                                var material = new THREE.MeshStandardMaterial( {metalness: 0.05, color: 0xffffff, map: tempTexture[textureCount] , transparent: true, alphaTest: alphaTestValue} );
 		                            }
 		                        }
 								if (material.type != "MultiMaterial") {
@@ -335,12 +336,17 @@ function buildBricks() {
                             // console.log(level[currentLevel].layers[k].objects[i].x + " | " + level[currentLevel].layers[k].objects[i].y + " | // | " + level[currentLevel].layers[k].objects[i].properties.img);
                             // console.log(objNames[level[currentLevel].layers[k].objects[i].name].id);
                             options.camera.distance.z = level[currentLevel].layers[k].properties.z;
+							let zdist = 0;
+							// change the position of entities with the .z property
+							if( level[currentLevel].layers[k].objects[i].properties.z!=undefined ){
+								zdist = parseFloat(level[currentLevel].layers[k].objects[i].properties.z);
+							}
                             entityList[ objNames[level[currentLevel].layers[k].objects[i].name].id ] = new Entity({
 								"id": objNames[level[currentLevel].layers[k].objects[i].name].id,
 								"position": {
 									"x": level[currentLevel].layers[k].objects[i].x / 2,
 									"y": -level[currentLevel].layers[k].objects[i].y / 2 + options.generation.blocksize,
-									"z": options.generation.blocksize * level[currentLevel].layers[k].properties.z
+									"z": options.generation.blocksize * level[currentLevel].layers[k].properties.z + options.generation.blocksize * zdist
 								},
 								"size":{
 									"width": options.generation.blocksize,
@@ -565,4 +571,15 @@ function boxtest() {
 			console.log(i);
 		}
 	}
+}
+
+function updateShadowCasts(threshhold=75){
+    let playerPos = entityList[player.id].position;
+    lights.forEach( l=>{
+        if(Math.hypot(l.position.x-playerPos.x,l.position.y-playerPos.y,l.position.z-playerPos.z)<=threshhold){
+            l.castShadow = true;
+        }else {
+            l.castShadow = false
+        }
+    })
 }

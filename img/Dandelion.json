@@ -1,6 +1,7 @@
 {
     "spriteFix": {
         "215" : {
+			"metalness": 0.0,
             "top" : 182,
             "bottom" : 214,
             "left" : 215,
@@ -10,12 +11,53 @@
         },
         "84" : {
             "name": "oven",
+			"metalness": 0.0,
             "top" : 99,
             "bottom" : 99,
             "left" : 99,
             "right" : 97,
             "front" : 84,
             "back" : 99
-        }
+        },
+		"46" : {
+			"name": "Quarzsand",
+			"metalness": 1.0,
+			"top" : 47,
+            "bottom" : 47,
+            "left" : 47,
+            "right" : 47,
+            "front" : 47,
+            "back" : 47
+		},
+		"62" : {
+			"name": "Quarzsand",
+			"metalness": 0.0,
+			"top" : 47,
+            "bottom" : 47,
+            "left" : 47,
+            "right" : 47,
+            "front" : 47,
+            "back" : 47
+		},
+		"61" : {
+			"name": "Quarzquarterchiseled",
+			"metalness": 0.1,
+			"top" : 61,
+            "bottom" : 61,
+            "left" : 61,
+            "right" : 61,
+            "front" : 61,
+            "back" : 61
+		},
+		"76" : {
+			"name": "Quarzpiller",
+			"metalness": 0.1,
+			"top" : 59,
+            "bottom" : 59,
+            "left" : 76,
+            "right" : 76,
+            "front" : 76,
+            "back" : 76
+		}
     }
 }

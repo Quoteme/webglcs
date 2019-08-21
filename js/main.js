@@ -1,4 +1,5 @@
 var scene = new THREE.Scene();
+var loadingCube;
 
 camera = new THREE.CombinedCamera( window.innerWidth / 4, window.innerHeight / 4, 75, 1, 1000, - 500, 1000 );
 
@@ -10,8 +11,10 @@ camera = new THREE.CombinedCamera( window.innerWidth / 4, window.innerHeight / 4
 var renderer = new THREE.WebGLRenderer();
 renderer.sortObjects = true;
 renderer.shadowMap.enabled = false;
+renderer.shadowMapCullFace = THREE.CullFaceBack
 renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
 renderer.setPixelRatio( window.devicePixelRatio );
+renderer.setPixelRatio( 0.85 );
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor(0x080808, 1);
 document.body.appendChild( renderer.domElement );
@@ -119,6 +122,9 @@ function animate() {
             if (typeof level[currentLevel].gameCode.update != "undefined") {
                 level[currentLevel].gameCode.update();
             }
+			// shadow casting updates
+			if(renderer.shadowMap.enabled)
+				updateShadowCasts();
         }
         // ------------- NOT LOADED -------------
         else{

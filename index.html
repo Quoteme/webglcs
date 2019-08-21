@@ -55,6 +55,7 @@
 				<div class="category" onclick="showMenuPart(4, 'worldBuilder')">worldBuilder</div>
 				<div class="category">shadows</div>
 				<div class="category">bump mapping</div>
+				<div class="category" onclick="showMenuPart(4, 'pixelRatio')">pixel ratio</div>
 			</div>
 			<div class="subMenu layer3" id="levels">
 				<div class="category" onclick="document.cookie=getElementById('levelName').value; changeLevel(getElementById('levelName').value, getElementById('memorySpace').value)">change Level</div>
@@ -92,6 +93,9 @@
 			<div class="subMenu layer4" id="weaponList">
 				Could not load... ¯\_(ツ)_/¯<br>
 				maybe restart the server?
+			</div>
+			<div class="subMenu layer4" id="pixelRatio">
+				<input type="range" value="0.8" step="0.05" min="0.3" max="1.5" onchange="renderer.setPixelRatio(this.value)">
 			</div>
 		</div>
 

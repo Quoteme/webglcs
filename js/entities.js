@@ -148,7 +148,7 @@ function Entity(props,callback){
     // movement / walking
 	this.walkLeft = (p=1)=>{
 		if(!this.collision.left){
-			entity.usedAnimation = "run";
+			this.usedAnimation = "run";
 			if(this.collision.bottom!=0){
 				this.velocity.x -= this.speedOnFoot*p * (options.camera.zoom>=0?1:-1)
 			}else{
@@ -158,7 +158,7 @@ function Entity(props,callback){
 	};
 	this.walkRight = (p=1)=>{
 		if(!this.collision.right){
-			entity.usedAnimation = "run";
+			this.usedAnimation = "run";
 			if(this.collision.bottom!=0){
 				this.velocity.x += this.speedOnFoot*p*(options.camera.zoom>=0?1:-1)
 			}else{
@@ -168,7 +168,7 @@ function Entity(props,callback){
 	};
 	this.walkBack = (p=1)=>{
 		if(!this.collision.behind){
-			entity.usedAnimation = "run";
+			this.usedAnimation = "run";
 			if(this.collision.bottom!=0){
 				this.velocity.z += this.speedOnFoot*p*(options.camera.zoom>=0?1:-1)
 			}else{
@@ -178,7 +178,7 @@ function Entity(props,callback){
 	};
 	this.walkFront = (p=1)=>{
 		if(!this.collision.front){
-			entity.usedAnimation = "run";
+			this.usedAnimation = "run";
 			if(this.collision.bottom!=0){
 				this.velocity.z -= this.speedOnFoot*p*(options.camera.zoom>=0?1:-1)
 			}else{
@@ -253,7 +253,6 @@ function Entity(props,callback){
         parent.canvas.width = parent.imageSize.x;
         parent.canvas.height = parent.imageSize.y;
         parent.size=actual_JSON.size;
-        console.log(parent.size);
         callback(parent);
     });
 }
