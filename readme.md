@@ -1,4 +1,7 @@
-# [PLAY ONLINE NOW](https://webglcs.herokuapp.com/)
+## [PLAY ONLINE NOW](https://webglcs.herokuapp.com/)
+
+No progress without funding... To help me reach the goal of writing my game, please consider supporting me:
+[![DONATE](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.me/lucahappel)
 
 ![](https://i.imgur.com/tqF2RAi.png)
 ![](https://i.imgur.com/Ysv2BVX.png)
