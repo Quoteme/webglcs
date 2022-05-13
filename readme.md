@@ -23,3 +23,8 @@ Now it is more of a general purpose engine for any 3D tiled platforming game, wi
 Development is slowly "progressing", with sometimes breaks which can last for over half a year.
 To get updates, make sure to visit the official forum post on the cave story wiki:
 [https://www.cavestory.org/forums/threads/webglcs-beta-0-2-2-webgl-single-multiplayer-cavestory-inspired-game.13930/#post-358707](https://www.cavestory.org/forums/threads/webglcs-beta-0-2-2-webgl-single-multiplayer-cavestory-inspired-game.13930/)
+
+## Todo
+
+* use [BufferGeometryUtils.mergeVertices](https://threejs.org/docs/#examples/en/utils/BufferGeometryUtils.mergeVertices) for hopefully dramatic speed improvements
+  * this might require updating three.js?
